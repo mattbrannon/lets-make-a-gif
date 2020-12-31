@@ -1,3 +1,7 @@
+:root {
+  --unit: 0.5rem;
+}
+
 .App {
   text-align: center;
 }
@@ -34,7 +38,6 @@ button {
   width: 200px;
   max-height: 100px;
   height: 100px;
-  margin: 3em 5em;
   border-radius: 8px;
   outline: none;
   background: dodgerblue;
@@ -42,4 +45,7 @@ button {
   font-weight: 700;
   font-size: 24px;
   text-shadow: -1px 1px 3px #333;
+
+  margin: clamp(calc(2 * var(--unit)), 5vh, calc(5 * var(--unit)))
+    clamp(calc(2 * var(--unit)), 3vw, calc(5 * var(--unit)));
 }

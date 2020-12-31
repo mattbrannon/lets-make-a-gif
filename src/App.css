@@ -40,7 +40,7 @@ button {
   height: 100px;
   border-radius: 8px;
   outline: none;
-  background: dodgerblue;
+  background: hsl(210, 100%, 45%);
   color: whitesmoke;
   font-weight: 700;
   font-size: 24px;
@@ -48,4 +48,9 @@ button {
 
   margin: clamp(calc(2 * var(--unit)), 5vh, calc(5 * var(--unit)))
     clamp(calc(2 * var(--unit)), 3vw, calc(5 * var(--unit)));
+}
+
+button:hover {
+  background: hsl(210, 100%, 60%);
+  transition: all 0.2s;
 }

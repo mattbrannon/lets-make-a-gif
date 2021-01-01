@@ -8,7 +8,6 @@ const DropZone = ({
   handleDrop,
   filePicker,
   handleInputChange,
-  handleUploadButtonClick,
 }) => {
   return (
     <form
@@ -19,7 +18,6 @@ const DropZone = ({
       onDrop={handleDrop}
       method="post"
       encType="multipart/form-data"
-      onSubmit={e => e.preventDefault()}
     >
       <img src={dropIcon} alt="drop files here" className={s.upload__icon} />
       <div className={s.inputWrapper}>
@@ -29,7 +27,6 @@ const DropZone = ({
           ref={filePicker}
           onChange={handleInputChange}
           id="fileElem"
-          // multiple
           accept="video/*,.mkv"
           style={{ display: 'none' }}
         />

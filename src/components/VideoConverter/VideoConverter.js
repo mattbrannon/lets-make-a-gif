@@ -14,10 +14,6 @@ class VideoConverter extends Component {
     this.state = {};
   }
 
-  handleUploadButtonClick = () => {
-    this.filePicker.current.click();
-  };
-
   handleDrag = e => {
     e.preventDefault();
     e.stopPropagation();
@@ -70,7 +66,6 @@ class VideoConverter extends Component {
         <DropZone
           dropSpot={this.dropSpot}
           filePicker={this.filePicker}
-          handleUploadButtonClick={this.handleUploadButtonClick}
           handleDrag={this.handleDrag}
           handleDrop={this.handleDrop}
           handleInputChange={this.handleInputChange}

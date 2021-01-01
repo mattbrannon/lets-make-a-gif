@@ -90,10 +90,3 @@ h2 {
   text-shadow: -1px -1px 1px #303030, -2px -2px 1px #101010;
   letter-spacing: 5px;
 }
-
-.instructions {
-  text-align: start;
-  margin: clamp(calc(2 * var(--unit)), 5vh, calc(5 * var(--unit)))
-    clamp(calc(2 * var(--unit)), 3vw, calc(5 * var(--unit)));
-  color: #000;
-}

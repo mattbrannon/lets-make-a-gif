@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from '@reach/router';
 
-import NavButton from '../NavButton/NavButton';
+import NavButton from './NavButton';
 
 const HomePage = () => {
   return (

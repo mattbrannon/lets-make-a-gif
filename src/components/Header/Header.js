@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from '@reach/router';
-// import HomePage from '../HomePage/HomePage';
-const Header = ({ goToHomePage }) => {
+const Header = () => {
   return (
     <header>
       <div className="outer_header">

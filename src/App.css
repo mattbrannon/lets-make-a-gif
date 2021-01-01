@@ -29,13 +29,6 @@
   flex-direction: column;
 }
 
-p {
-  font-size: 24px;
-  font-weight: 700;
-  color: #202020;
-  /* text-shadow: -1px 0px 1px #404040; */
-}
-
 .inner-wrapper {
   display: flex;
   justify-content: center;
@@ -96,4 +89,11 @@ h2 {
   color: hsl(55, 100%, 60%);
   text-shadow: -1px -1px 1px #303030, -2px -2px 1px #101010;
   letter-spacing: 5px;
+}
+
+.instructions {
+  text-align: start;
+  margin: clamp(calc(2 * var(--unit)), 5vh, calc(5 * var(--unit)))
+    clamp(calc(2 * var(--unit)), 3vw, calc(5 * var(--unit)));
+  color: #000;
 }

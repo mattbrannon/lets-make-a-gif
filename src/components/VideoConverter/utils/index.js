@@ -12,7 +12,7 @@ const config = {
   },
 };
 
-const uploadVideo = async data => {
+export const uploadVideo = async data => {
   try {
     const response = await axios.post(
       'http://localhost:4000/upload',
@@ -25,4 +25,15 @@ const uploadVideo = async data => {
   }
 };
 
-export default uploadVideo;
+export const downloadVideo = async () => {
+  try {
+    const response = await fetch('http://localhost:4000/download');
+    const blob = await response.blob();
+    const objectUrl = await URL.createObjectURL(blob);
+    return objectUrl;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// export default uploadVideo;

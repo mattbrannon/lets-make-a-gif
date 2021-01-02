@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Header from '../Header/Header';
 import DropZone from './DropZone';
+import DownloadButton from './DownloadButton';
 
 import s from './style.module.css';
 
@@ -12,7 +13,9 @@ class VideoConverter extends Component {
     super(props);
     this.dropSpot = React.createRef();
     this.filePicker = React.createRef();
-    this.state = {};
+    this.state = {
+      videoSource: null,
+    };
   }
 
   handleDrag = e => {
@@ -39,8 +42,8 @@ class VideoConverter extends Component {
     const file = files[0];
     data.append('file', file);
     uploadVideo(data)
-      .then(() => this.setState({ success: true }))
       .then(() => downloadVideo())
+      .then(videoSource => this.setState({ videoSource }))
       .catch(error => console.log('error in upload', error));
   };
 
@@ -64,7 +67,14 @@ class VideoConverter extends Component {
           handleDrag={this.handleDrag}
           handleDrop={this.handleDrop}
           handleInputChange={this.handleInputChange}
-        ></DropZone>
+        >
+          {this.state.videoSource ? (
+            <DownloadButton
+              file={this.state.videoSource}
+              filename={'converted.gif'}
+            />
+          ) : null}
+        </DropZone>
       </div>
     );
   }

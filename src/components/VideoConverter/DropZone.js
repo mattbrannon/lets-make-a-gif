@@ -8,6 +8,7 @@ const DropZone = ({
   handleDrop,
   filePicker,
   handleInputChange,
+  children,
 }) => {
   return (
     <form
@@ -34,6 +35,7 @@ const DropZone = ({
           <strong className={s.label__strong}>Choose a file </strong>
           or drag it here
         </label>
+        {children}
       </div>
     </form>
   );

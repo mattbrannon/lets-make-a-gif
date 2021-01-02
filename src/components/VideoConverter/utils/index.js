@@ -3,7 +3,7 @@ import axios from 'axios';
 const config = {
   method: 'post',
   baseUrl: 'http://localhost:4000/',
-  url: 'upload',
+  url: 'upload-video',
   onUploadProgress: function (progressEvent) {
     const percentCompleted = Math.round(
       (progressEvent.loaded * 100) / progressEvent.total
@@ -15,7 +15,7 @@ const config = {
 export const uploadVideo = async data => {
   try {
     const response = await axios.post(
-      'http://localhost:4000/upload',
+      'http://localhost:4000/upload-video',
       data,
       config
     );

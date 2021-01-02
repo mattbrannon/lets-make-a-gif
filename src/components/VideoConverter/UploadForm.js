@@ -1,27 +1,27 @@
 import React from 'react';
 import s from './style.module.css';
+import dropIcon from './images/dropIcon.svg';
 
-const UploadForm = ({ filePicker, handleChange, handleUploadButtonClick }) => {
+const UploadForm = ({ filePicker, handleInputChange }) => {
   return (
-    <div className={s.inputWrapper}>
-      <input
-        type="file"
-        name="file"
-        ref={filePicker}
-        onChange={handleChange}
-        id="fileElem"
-        multiple
-        accept={'video/*'}
-        style={{ display: 'none' }}
-      />
-      <label htmlFor="fileElem">
-        <strong>Choose a file </strong>
-        or drag it here
-      </label>
-      {/* <button onClick={handleUploadButtonClick} className={s.uploadButton}>
-       Choose a file or drag it here
-      </button> */}
-    </div>
+    <>
+      <img src={dropIcon} alt="drop files here" className={s.upload__icon} />
+      <div className={s.inputWrapper}>
+        <input
+          type="file"
+          name="file"
+          ref={filePicker}
+          onChange={handleInputChange}
+          id="fileElem"
+          accept="video/*,.mkv"
+          style={{ display: 'none' }}
+        />
+        <label htmlFor="fileElem">
+          <strong className={s.label__strong}>Choose a file </strong>
+          or drag it here
+        </label>
+      </div>
+    </>
   );
 };
 

@@ -3,10 +3,13 @@ import React, { Component } from 'react';
 import Header from '../Header/Header';
 import DropZone from './DropZone';
 import DownloadButton from './DownloadButton';
+import ProgressMeter from './ProgressMeter';
+import Spinner from './Spinner';
+import UploadForm from './UploadForm';
 
 import s from './style.module.css';
 
-import { uploadVideo, downloadVideo } from './utils/index';
+import { uploadVideo, downloadVideo, generateHash } from './utils/index';
 
 class VideoConverter extends Component {
   constructor(props) {
@@ -14,7 +17,11 @@ class VideoConverter extends Component {
     this.dropSpot = React.createRef();
     this.filePicker = React.createRef();
     this.state = {
+      uploadStarted: false,
       videoSource: null,
+      percentComplete: 0,
+      isConverting: false,
+      filename: null,
     };
   }
 
@@ -24,28 +31,48 @@ class VideoConverter extends Component {
   };
 
   handleDrop = e => {
-    e.stopPropagation();
-    e.preventDefault();
+    this.handleDrag(e);
     const dt = e.dataTransfer;
     const files = dt.files;
     this.handleFileUpload(files);
   };
 
-  handleInputChange = e => {
+  handleInputChange = async e => {
     e.preventDefault();
     const files = this.filePicker.current.files;
-    this.handleFileUpload(files);
+    const filename = await generateHash(files[0].name);
+
+    if (this.state.filename !== filename) {
+      this.setState({ filename, videoSource: null, isConverting: false });
+      this.handleFileUpload(files);
+    }
+  };
+
+  updateProgress = percentComplete => {
+    this.setState({ percentComplete });
   };
 
   handleFileUpload = files => {
     const data = new FormData();
     const file = files[0];
     data.append('file', file);
-    uploadVideo(data)
-      .then(() => downloadVideo())
+    this.setState({ uploadStarted: true });
+
+    uploadVideo(data, this.updateProgress)
+      .then(downloadVideo)
       .then(videoSource => this.setState({ videoSource }))
-      .catch(error => console.log('error in upload', error));
+      .catch(error => console.error('error in handleFileUpload', error));
   };
+
+  componentDidUpdate() {
+    if (this.state.percentComplete === 100) {
+      this.setState({
+        isConverting: true,
+        percentComplete: 0,
+        uploadStarted: false,
+      });
+    }
+  }
 
   render() {
     return (
@@ -66,14 +93,28 @@ class VideoConverter extends Component {
           filePicker={this.filePicker}
           handleDrag={this.handleDrag}
           handleDrop={this.handleDrop}
-          handleInputChange={this.handleInputChange}
         >
           {this.state.videoSource ? (
-            <DownloadButton
-              file={this.state.videoSource}
-              filename={'converted.gif'}
+            <>
+              <UploadForm
+                handleInputChange={this.handleInputChange}
+                filePicker={this.filePicker}
+              />
+              <DownloadButton
+                file={this.state.videoSource}
+                filename={'converted.gif'}
+              />
+            </>
+          ) : this.state.uploadStarted && !this.state.isConverting ? (
+            <ProgressMeter percentComplete={this.state.percentComplete} />
+          ) : this.state.isConverting ? (
+            <Spinner />
+          ) : (
+            <UploadForm
+              handleInputChange={this.handleInputChange}
+              filePicker={this.filePicker}
             />
-          ) : null}
+          )}
         </DropZone>
       </div>
     );

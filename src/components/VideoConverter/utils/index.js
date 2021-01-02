@@ -1,23 +1,18 @@
 import axios from 'axios';
 
-const config = {
-  method: 'post',
-  baseUrl: 'http://localhost:4000/',
-  url: 'upload-video',
-  onUploadProgress: function (progressEvent) {
-    const percentCompleted = Math.round(
-      (progressEvent.loaded * 100) / progressEvent.total
-    );
-    console.log(percentCompleted);
-  },
+const handleProgressEvent = (progressEvent, setState) => {
+  const percentComplete = Math.round(
+    (progressEvent.loaded * 100) / progressEvent.total
+  );
+  setState(percentComplete);
 };
 
-export const uploadVideo = async data => {
+export const uploadVideo = async (data, callback) => {
   try {
     const response = await axios.post(
       'http://localhost:4000/upload-video',
       data,
-      config
+      { onUploadProgress: e => handleProgressEvent(e, callback) }
     );
     return await response.data;
   } catch (error) {
@@ -34,6 +29,19 @@ export const downloadVideo = async () => {
   } catch (error) {
     console.error(error);
   }
+};
+
+//https://stackoverflow.com/a/43383990
+export const generateHash = filename => {
+  let strBuf = new TextEncoder('utf-8').encode(filename);
+  return crypto.subtle.digest('SHA-256', strBuf).then(hash => {
+    let result = '';
+    const view = new DataView(hash);
+    for (let i = 0; i < hash.byteLength; i += 4) {
+      result += ('00000000' + view.getUint32(i).toString(16)).slice(-8);
+    }
+    return result;
+  });
 };
 
 // export default uploadVideo;

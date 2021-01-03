@@ -82,10 +82,14 @@ class VideoConverter extends Component {
         <div className={s.instructions}>
           <h3>Instructions:</h3>
           <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quidem
-            expedita nemo a? Odio, tempora commodi dicta voluptates
-            necessitatibus magnam nulla eveniet cupiditate sed repudiandae
-            incidunt asperiores ex unde omnis culpa.
+            <ul>
+              <li>
+                Choose a video file on your computer that you'd like to convert
+                to a gif
+              </li>
+              <li>Length of video must be less than 1 minute long</li>
+              <li>Size of video must be less than 50mb</li>
+            </ul>
           </p>
         </div>
         <DropZone

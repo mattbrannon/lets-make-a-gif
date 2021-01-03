@@ -7,11 +7,11 @@ import ProgressMeter from './ProgressMeter';
 import Spinner from './Spinner';
 import UploadForm from './UploadForm';
 
-import s from './style.module.css';
+import s from './styles/style.module.css';
 
 import { uploadVideo, downloadVideo, generateHash } from './utils/index';
 
-class VideoConverter extends Component {
+class Converter extends Component {
   constructor(props) {
     super(props);
     this.dropSpot = React.createRef();
@@ -22,6 +22,7 @@ class VideoConverter extends Component {
       percentComplete: 0,
       isConverting: false,
       filename: null,
+      type: null,
     };
   }
 
@@ -74,6 +75,16 @@ class VideoConverter extends Component {
     }
   }
 
+  componentDidMount() {
+    const type = this.props.video ? 'video' : 'image';
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        type: type,
+      };
+    });
+  }
+
   render() {
     return (
       <div>
@@ -103,6 +114,10 @@ class VideoConverter extends Component {
               <UploadForm
                 handleInputChange={this.handleInputChange}
                 filePicker={this.filePicker}
+                multiple={this.state.type === 'video' ? false : true}
+                accept={
+                  this.state.type === 'video' ? 'video/*,.mkv' : 'image/*'
+                }
               />
               <DownloadButton
                 file={this.state.videoSource}
@@ -117,6 +132,8 @@ class VideoConverter extends Component {
             <UploadForm
               handleInputChange={this.handleInputChange}
               filePicker={this.filePicker}
+              multiple={this.state.type === 'video' ? false : true}
+              accept={this.state.type === 'video' ? 'video/*,.mkv' : 'image/*'}
             />
           )}
         </DropZone>
@@ -125,4 +142,4 @@ class VideoConverter extends Component {
   }
 }
 
-export default VideoConverter;
+export default Converter;

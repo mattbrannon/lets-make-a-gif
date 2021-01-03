@@ -1,8 +1,8 @@
 import React from 'react';
-import s from './style.module.css';
+import s from './styles/style.module.css';
 import dropIcon from './images/dropIcon.svg';
 
-const UploadForm = ({ filePicker, handleInputChange }) => {
+const UploadForm = ({ filePicker, handleInputChange, multiple, accept }) => {
   return (
     <>
       <img src={dropIcon} alt="drop files here" className={s.upload__icon} />
@@ -13,8 +13,9 @@ const UploadForm = ({ filePicker, handleInputChange }) => {
           ref={filePicker}
           onChange={handleInputChange}
           id="fileElem"
-          accept="video/*,.mkv"
+          accept={accept}
           style={{ display: 'none' }}
+          multiple={multiple}
         />
         <label htmlFor="fileElem">
           <strong className={s.label__strong}>Choose a file </strong>

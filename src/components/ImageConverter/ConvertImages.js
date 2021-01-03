@@ -1,12 +1,11 @@
 import React from 'react';
-import Header from '../Header/Header';
+import Converter from '../Converter/Converter';
 
 const ImageConverter = () => {
   return (
-    <div>
-      <Header />
-      <p>Image Converter</p>
-    </div>
+    <>
+      <Converter video={false} />
+    </>
   );
 };
 

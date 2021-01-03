@@ -1,5 +1,5 @@
 import React from 'react';
-import s from './style.module.css';
+import s from './styles/style.module.css';
 
 const DropZone = ({ dropSpot, handleDrag, handleDrop, children }) => {
   return (

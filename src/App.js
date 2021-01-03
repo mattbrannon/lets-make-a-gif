@@ -2,8 +2,8 @@ import React from 'react';
 import './App.css';
 import { Router } from '@reach/router';
 
-import VideoConverter from './components/VideoConverter/VideoConverter';
-import ImageConverter from './components/ImageConverter/ImageConverter';
+import VideoConverter from './components/VideoConverter/ConvertVideo';
+import ImageConverter from './components/ImageConverter/ConvertImages';
 import HomePage from './components/HomePage/HomePage';
 
 const App = () => {

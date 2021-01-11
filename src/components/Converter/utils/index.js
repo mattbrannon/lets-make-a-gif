@@ -20,6 +20,18 @@ export const uploadVideo = async (data, callback) => {
   }
 };
 
+export const uploadImages = async data => {
+  try {
+    const response = await axios.post(
+      'http://localhost:4000/upload-images',
+      data
+    );
+    return await response.data;
+  } catch (error) {
+    console.log('AXIOS ERROR ->', error.message);
+  }
+};
+
 export const downloadVideo = async () => {
   try {
     const response = await fetch('http://localhost:4000/download');

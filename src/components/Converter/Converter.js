@@ -6,10 +6,14 @@ import DownloadButton from './DownloadButton';
 import ProgressMeter from './ProgressMeter';
 import Spinner from './Spinner';
 import UploadForm from './UploadForm';
+import Instructions from './Instructions';
 
-import s from './styles/style.module.css';
-
-import { uploadVideo, downloadVideo, generateHash } from './utils/index';
+import {
+  uploadVideo,
+  uploadImages,
+  downloadVideo,
+  generateHash,
+} from './utils/index';
 
 class Converter extends Component {
   constructor(props) {
@@ -23,6 +27,20 @@ class Converter extends Component {
       isConverting: false,
       filename: null,
       type: null,
+      files: [],
+      instructions: {
+        video: [
+          `Choose a video file on your computer that you'd like to convert to a gif`,
+          `Length of video must be less than 1 minute long`,
+          `Size of video must be less than 50mb`,
+        ],
+        image: [
+          `Choose a series of images on your computer that you'd like to convert to a gif`,
+          `Each image should be less than 5mb in size`,
+          `You are limited to 100 images per upload`,
+          `For best results, images should all be equal width and height`,
+        ],
+      },
     };
   }
 
@@ -43,10 +61,35 @@ class Converter extends Component {
     const files = this.filePicker.current.files;
     const filename = await generateHash(files[0].name);
 
-    if (this.state.filename !== filename) {
+    if (this.state.type === 'video' && this.state.filename !== filename) {
       this.setState({ filename, videoSource: null, isConverting: false });
       this.handleFileUpload(files);
+    } else {
+      this.handleMultipleFileUpload(files);
     }
+  };
+
+  handleChange = e => {
+    e.preventDefault();
+    const files = this.filePicker.current.files;
+
+    const data = new FormData();
+    for (let file of files) {
+      data.append('file', file);
+    }
+
+    uploadImages(data)
+      .then(downloadVideo)
+      .then(videoSource => this.setState({ videoSource }))
+      .catch(error => console.error('error in handleFileUpload', error));
+  };
+
+  handleMultipleFileUpload = files => {
+    const data = new FormData();
+    for (let file of files) {
+      data.append('file', file);
+    }
+    this.setState({ uploadStarted: true });
   };
 
   updateProgress = percentComplete => {
@@ -89,20 +132,13 @@ class Converter extends Component {
     return (
       <div>
         <Header />
-
-        <div className={s.instructions}>
-          <h3>Instructions:</h3>
-          <p>
-            <ul>
-              <li>
-                Choose a video file on your computer that you'd like to convert
-                to a gif
-              </li>
-              <li>Length of video must be less than 1 minute long</li>
-              <li>Size of video must be less than 50mb</li>
-            </ul>
-          </p>
-        </div>
+        <Instructions
+          instructions={
+            this.state.type === 'video'
+              ? this.state.instructions.video
+              : this.state.instructions.image
+          }
+        />
         <DropZone
           dropSpot={this.dropSpot}
           filePicker={this.filePicker}
@@ -112,7 +148,11 @@ class Converter extends Component {
           {this.state.videoSource ? (
             <>
               <UploadForm
-                handleInputChange={this.handleInputChange}
+                handleInputChange={
+                  this.state.type === 'video'
+                    ? this.handleInputChange
+                    : this.handleChange
+                }
                 filePicker={this.filePicker}
                 multiple={this.state.type === 'video' ? false : true}
                 accept={
@@ -130,7 +170,11 @@ class Converter extends Component {
             <Spinner />
           ) : (
             <UploadForm
-              handleInputChange={this.handleInputChange}
+              handleInputChange={
+                this.state.type === 'video'
+                  ? this.handleInputChange
+                  : this.handleChange
+              }
               filePicker={this.filePicker}
               multiple={this.state.type === 'video' ? false : true}
               accept={this.state.type === 'video' ? 'video/*,.mkv' : 'image/*'}

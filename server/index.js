@@ -26,7 +26,7 @@ const handleSuccess = (data, res) => {
   res.status(201).contentType('application/json').end(json);
 };
 
-const storage = multer.diskStorage({
+const videoStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads');
   },
@@ -38,8 +38,19 @@ const storage = multer.diskStorage({
   },
 });
 
-const fileFilter = (req, file, cb) => {
-  const validExts = ['.mp4', '.mov', '.webm', '.gif', '.mkv', '.m4v'];
+const imageStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './images');
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+  },
+});
+
+const imageFileFilter = (req, file, cb) => {
+  const validExts = ['.jpeg', '.jpg', '.png'];
   const ext = path.extname(file.originalname).toLowerCase();
   if (validExts.includes(ext)) {
     cb(null, true);
@@ -48,7 +59,17 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-const limits = {
+const videoFileFilter = (req, file, cb) => {
+  const validExts = ['.mp4', '.mov', '.webm', '.mkv', '.m4v'];
+  const ext = path.extname(file.originalname).toLowerCase();
+  if (validExts.includes(ext)) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+const videoLimits = {
   fieldNameSize: 100,
   fieldSize: 1024,
   fields: 1,
@@ -58,15 +79,40 @@ const limits = {
   headerPairs: 100,
 };
 
-const upload = multer({
-  storage,
-  fileFilter,
-  limits,
+const imageLimits = {
+  fieldNameSize: 100,
+  fieldSize: 1024,
+  fields: 1,
+  fileSize: 2.5e8,
+  files: 100,
+  parts: 300,
+  headerPairs: 100,
+};
+
+const videoUpload = multer({
+  storage: videoStorage,
+  fileFilter: videoFileFilter,
+  limits: videoLimits,
 });
 
-app.post('/upload-video', upload.single('file'), (req, res) => {
+const imageUpload = multer({
+  storage: imageStorage,
+  fileFilter: imageFileFilter,
+  limits: imageLimits,
+});
+
+app.post('/upload-images', imageUpload.array('file'), (req, res) => {
+  const script = path.join(__dirname, 'scripts', 'convert_images.sh');
+  const bash = exec(`bash ${script}`);
+
+  bash.stdout.on('close', data => {
+    res.status(201).send('success');
+  });
+});
+
+app.post('/upload-video', videoUpload.single('file'), (req, res) => {
   const file = req.file;
-  const script = path.join(__dirname, 'scripts', 'make_gif.sh');
+  const script = path.join(__dirname, 'scripts', 'convert_video.sh');
   const filePath = path.join(__dirname, '../', 'uploads', file.filename);
 
   let pathToGif;

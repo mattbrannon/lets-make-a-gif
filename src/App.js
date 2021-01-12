@@ -1,17 +1,23 @@
+import React from 'react';
 import './App.css';
+import { Router } from '@reach/router';
 
-function App() {
+import VideoConverter from './components/VideoConverter/ConvertVideo';
+import ImageConverter from './components/ImageConverter/ConvertImages';
+import HomePage from './components/HomePage/HomePage';
+import NotFoundPage from './components/NotFoundPage/NotFoundPage';
+
+const App = () => {
   return (
     <div className="App">
-      <div className="wrapper">
-        <p>I want to...</p>
-        <div className="choices">
-          <button className="first">Convert a video to a gif</button>
-          <button className="second">Convert images to a gif</button>
-        </div>
-      </div>
+      <Router>
+        <HomePage path="/" />
+        <ImageConverter path="image" />
+        <VideoConverter path="video" />
+        <NotFoundPage default />
+      </Router>
     </div>
   );
-}
+};
 
 export default App;

@@ -10,7 +10,7 @@ const handleProgressEvent = (progressEvent, setState) => {
 export const uploadVideo = async (data, callback) => {
   try {
     const response = await axios.post(
-      'http://localhost:4000/upload-video',
+      'http://localhost:5000/upload-video',
       data,
       { onUploadProgress: e => handleProgressEvent(e, callback) }
     );
@@ -23,7 +23,7 @@ export const uploadVideo = async (data, callback) => {
 export const uploadImages = async data => {
   try {
     const response = await axios.post(
-      'http://localhost:4000/upload-images',
+      'http://localhost:5000/upload-images',
       data
     );
     return await response.data;
@@ -34,9 +34,10 @@ export const uploadImages = async data => {
 
 export const downloadVideo = async () => {
   try {
-    const response = await fetch('http://localhost:4000/download');
+    const response = await fetch('http://localhost:5000/download');
     const blob = await response.blob();
     const objectUrl = await URL.createObjectURL(blob);
+    console.log(objectUrl);
     return objectUrl;
   } catch (error) {
     console.error(error);

@@ -23,7 +23,8 @@
     "eject": "react-scripts eject",
     "server:dev": "nodemon server/index.js",
     "api:dev": "nodemon server/api.js",
-    "dev": "concurrently \"npm run server:dev\" \"npm run api:dev\""
+    "dev": "concurrently \"npm run server:dev\" \"npm run api:dev\"",
+    "prod": "npm run build && node server/index.js"
   },
   "eslintConfig": {
     "extends": [

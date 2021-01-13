@@ -5,11 +5,22 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
 
+const {
+  handleVideoUpload,
+  handleImageUpload,
+  handleGifDownload,
+  imageUpload,
+  videoUpload,
+} = require('./api');
+
+app.use(cors());
 app.use(express.static(path.join(__dirname, '../build')));
 
-app.get('*', (_, res) => {
+app.post('/upload-images', imageUpload.array('file'), handleImageUpload);
+app.post('/upload-video', videoUpload.single('file'), handleVideoUpload);
+app.get('/download', handleGifDownload);
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 

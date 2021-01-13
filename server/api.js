@@ -1,20 +1,7 @@
 const fs = require('fs');
-
 const path = require('path');
-
 const multer = require('multer');
-const express = require('express');
-const cors = require('cors');
 const exec = require('child_process').exec;
-
-const app = express();
-app.use(cors());
-
-const PORT = process.env.PORT || 4000;
-
-app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
-});
 
 const handleError = (error, res) => {
   const json = JSON.stringify({ error: true, message: error.message });
@@ -101,16 +88,16 @@ const imageUpload = multer({
   limits: imageLimits,
 });
 
-app.post('/upload-images', imageUpload.array('file'), (req, res) => {
+const handleImageUpload = (req, res) => {
   const script = path.join(__dirname, 'scripts', 'convert_images.sh');
   const bash = exec(`bash ${script}`);
 
   bash.stdout.on('close', data => {
     res.status(201).send('success');
   });
-});
+};
 
-app.post('/upload-video', videoUpload.single('file'), (req, res) => {
+const handleVideoUpload = (req, res) => {
   const file = req.file;
   const script = path.join(__dirname, 'scripts', 'convert_video.sh');
   const filePath = path.join(__dirname, '../', 'uploads', file.filename);
@@ -134,9 +121,9 @@ app.post('/upload-video', videoUpload.single('file'), (req, res) => {
   bash.stderr.on('data', data => {
     console.error(data);
   });
-});
+};
 
-app.get('/download', (req, res) => {
+const handleGifDownload = (req, res) => {
   const promise = new Promise((resolve, reject) => {
     const file = path.join(__dirname, '../uploads', 'new-file.gif');
     resolve(file);
@@ -155,4 +142,12 @@ app.get('/download', (req, res) => {
       });
     })
     .catch(error => console.log(error));
-});
+};
+
+module.exports = {
+  handleImageUpload,
+  handleVideoUpload,
+  handleGifDownload,
+  imageUpload,
+  videoUpload,
+};

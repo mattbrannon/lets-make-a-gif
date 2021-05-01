@@ -12,3 +12,13 @@ Other possible functions of the site include:
 - splicing mulitple videos together
 
 All of this functionality can be accomplished quite easily with [ffmpeg](https://ffmpeg.org/)
+
+
+## Reminder
+A folder named `uploads` and a folder named `images` are expected at the root of the project
+
+*Empty folders are **NOT** uploaded to github*
+
+To work around this, these folders currently contain a `.info` file.
+
+Feel free to remove delete this file as it's just a placeholder to ensure folder is pushed to the repo

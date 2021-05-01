@@ -17,8 +17,20 @@ const {
 app.use(cors());
 app.use(express.static(path.join(__dirname, '../build')));
 
-app.post('/upload-images', imageUpload.array('file'), handleImageUpload);
-app.post('/upload-video', videoUpload.single('file'), handleVideoUpload);
+/// POST REQUEST
+
+app.post(
+  '/upload-images',
+  imageUpload.array('file'),
+  handleImageUpload
+);
+app.post(
+  '/upload-video',
+  videoUpload.single('file'),
+  handleVideoUpload
+);
+
+/// GET REQUEST
 app.get('/download', handleGifDownload);
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build', 'index.html'));

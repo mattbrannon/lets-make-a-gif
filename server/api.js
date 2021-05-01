@@ -4,7 +4,10 @@ const multer = require('multer');
 const exec = require('child_process').exec;
 
 const handleError = (error, res) => {
-  const json = JSON.stringify({ error: true, message: error.message });
+  const json = JSON.stringify({
+    error: true,
+    message: error.message,
+  });
   res.status(500).contentType('application/json').end(json);
 };
 
@@ -19,7 +22,8 @@ const videoStorage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname).toLowerCase();
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const uniqueSuffix =
+      Date.now() + '-' + Math.round(Math.random() * 1e9);
 
     cb(null, file.fieldname + '-' + uniqueSuffix + ext);
   },
@@ -31,7 +35,8 @@ const imageStorage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname).toLowerCase();
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const uniqueSuffix =
+      Date.now() + '-' + Math.round(Math.random() * 1e9);
     cb(null, file.fieldname + '-' + uniqueSuffix + ext);
   },
 });
@@ -71,9 +76,9 @@ const imageLimits = {
   fieldSize: 1024,
   fields: 1,
   fileSize: 2.5e8,
-  files: 100,
-  parts: 300,
-  headerPairs: 100,
+  files: 300,
+  // parts: 2000,
+  // headerPairs: 100,
 };
 
 const videoUpload = multer({
@@ -92,7 +97,7 @@ const handleImageUpload = (req, res) => {
   const script = path.join(__dirname, 'scripts', 'convert_images.sh');
   const bash = exec(`bash ${script}`);
 
-  bash.stdout.on('close', data => {
+  bash.stdout.on('close', (data) => {
     res.status(201).send('success');
   });
 };
@@ -100,17 +105,22 @@ const handleImageUpload = (req, res) => {
 const handleVideoUpload = (req, res) => {
   const file = req.file;
   const script = path.join(__dirname, 'scripts', 'convert_video.sh');
-  const filePath = path.join(__dirname, '../', 'uploads', file.filename);
+  const filePath = path.join(
+    __dirname,
+    '../',
+    'uploads',
+    file.filename
+  );
 
   let pathToGif;
   const bash = exec(`bash ${script} ${filePath}`);
 
-  bash.stdout.on('data', data => {
+  bash.stdout.on('data', (data) => {
     pathToGif = data;
   });
 
-  bash.stdout.on('close', data => {
-    fs.unlink(file.path, error => {
+  bash.stdout.on('close', (data) => {
+    fs.unlink(file.path, (error) => {
       if (error) {
         return handleError(error, res);
       }
@@ -118,7 +128,7 @@ const handleVideoUpload = (req, res) => {
     });
   });
 
-  bash.stderr.on('data', data => {
+  bash.stderr.on('data', (data) => {
     console.error(data);
   });
 };
@@ -130,18 +140,18 @@ const handleGifDownload = (req, res) => {
   });
 
   promise
-    .then(file => {
+    .then((file) => {
       fs.createReadStream(file).pipe(res);
       return file;
     })
-    .then(file => {
-      fs.unlink(file, error => {
+    .then((file) => {
+      fs.unlink(file, (error) => {
         if (error) {
           console.log('error unlinking file', file);
         }
       });
     })
-    .catch(error => console.log(error));
+    .catch((error) => console.log(error));
 };
 
 module.exports = {

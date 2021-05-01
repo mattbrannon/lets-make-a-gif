@@ -104,7 +104,9 @@ const handleImageUpload = (req, res) => {
 
 const handleVideoUpload = (req, res) => {
   const file = req.file;
+  console.log({ file });
   const script = path.join(__dirname, 'scripts', 'convert_video.sh');
+  console.log({ script });
   const filePath = path.join(
     __dirname,
     '../',
@@ -112,11 +114,14 @@ const handleVideoUpload = (req, res) => {
     file.filename
   );
 
+  console.log({ filePath });
+
   let pathToGif;
   const bash = exec(`bash ${script} ${filePath}`);
 
   bash.stdout.on('data', (data) => {
     pathToGif = data;
+    console.log({ pathToGif });
   });
 
   bash.stdout.on('close', (data) => {

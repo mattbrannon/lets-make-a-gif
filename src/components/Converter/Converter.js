@@ -8,12 +8,7 @@ import Spinner from './Spinner';
 import UploadForm from './UploadForm';
 import Instructions from './Instructions';
 
-import {
-  uploadVideo,
-  uploadImages,
-  downloadVideo,
-  generateHash,
-} from './utils/index';
+import { uploadVideo, uploadImages, downloadVideo, generateHash } from './utils/index';
 
 class Converter extends Component {
   constructor(props) {
@@ -44,32 +39,37 @@ class Converter extends Component {
     };
   }
 
-  handleDrag = e => {
+  handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
-  handleDrop = e => {
+  handleDrop = (e) => {
     this.handleDrag(e);
     const dt = e.dataTransfer;
     const files = dt.files;
     this.handleFileUpload(files);
   };
 
-  handleInputChange = async e => {
+  handleInputChange = async (e) => {
     e.preventDefault();
     const files = this.filePicker.current.files;
     const filename = await generateHash(files[0].name);
 
     if (this.state.type === 'video' && this.state.filename !== filename) {
-      this.setState({ filename, videoSource: null, isConverting: false });
+      this.setState({
+        filename,
+        videoSource: null,
+        isConverting: false,
+      });
       this.handleFileUpload(files);
     } else {
+      console.log('we are here');
       this.handleMultipleFileUpload(files);
     }
   };
 
-  handleChange = e => {
+  handleChange = (e) => {
     e.preventDefault();
     const files = this.filePicker.current.files;
 
@@ -79,12 +79,16 @@ class Converter extends Component {
     }
 
     uploadImages(data)
+      .then((result) => {
+        console.log('here we are', { result });
+        return result;
+      })
       .then(downloadVideo)
-      .then(videoSource => this.setState({ videoSource }))
-      .catch(error => console.error('error in handleFileUpload', error));
+      .then((videoSource) => this.setState({ videoSource }))
+      .catch((error) => console.error('error in handleFileUpload', error));
   };
 
-  handleMultipleFileUpload = files => {
+  handleMultipleFileUpload = (files) => {
     const data = new FormData();
     for (let file of files) {
       data.append('file', file);
@@ -92,11 +96,11 @@ class Converter extends Component {
     this.setState({ uploadStarted: true });
   };
 
-  updateProgress = percentComplete => {
+  updateProgress = (percentComplete) => {
     this.setState({ percentComplete });
   };
 
-  handleFileUpload = files => {
+  handleFileUpload = (files) => {
     const data = new FormData();
     const file = files[0];
     data.append('file', file);
@@ -104,8 +108,8 @@ class Converter extends Component {
 
     uploadVideo(data, this.updateProgress)
       .then(downloadVideo)
-      .then(videoSource => this.setState({ videoSource }))
-      .catch(error => console.error('error in handleFileUpload', error));
+      .then((videoSource) => this.setState({ videoSource }))
+      .catch((error) => console.error('error in handleFileUpload', error));
   };
 
   componentDidUpdate() {
@@ -120,7 +124,7 @@ class Converter extends Component {
 
   componentDidMount() {
     const type = this.props.video ? 'video' : 'image';
-    this.setState(prevState => {
+    this.setState((prevState) => {
       return {
         ...prevState,
         type: type,
@@ -131,7 +135,7 @@ class Converter extends Component {
   render() {
     return (
       <div>
-        <Header />
+        <Header background />
         <Instructions
           instructions={
             this.state.type === 'video'
@@ -149,20 +153,13 @@ class Converter extends Component {
             <>
               <UploadForm
                 handleInputChange={
-                  this.state.type === 'video'
-                    ? this.handleInputChange
-                    : this.handleChange
+                  this.state.type === 'video' ? this.handleInputChange : this.handleChange
                 }
                 filePicker={this.filePicker}
                 multiple={this.state.type === 'video' ? false : true}
-                accept={
-                  this.state.type === 'video' ? 'video/*,.mkv' : 'image/*'
-                }
+                accept={this.state.type === 'video' ? 'video/*,.mkv' : 'image/*'}
               />
-              <DownloadButton
-                file={this.state.videoSource}
-                filename={'converted.gif'}
-              />
+              <DownloadButton file={this.state.videoSource} filename={'converted.gif'} />
             </>
           ) : this.state.uploadStarted && !this.state.isConverting ? (
             <ProgressMeter percentComplete={this.state.percentComplete} />
@@ -171,9 +168,7 @@ class Converter extends Component {
           ) : (
             <UploadForm
               handleInputChange={
-                this.state.type === 'video'
-                  ? this.handleInputChange
-                  : this.handleChange
+                this.state.type === 'video' ? this.handleInputChange : this.handleChange
               }
               filePicker={this.filePicker}
               multiple={this.state.type === 'video' ? false : true}

@@ -1,12 +1,12 @@
 import React from 'react';
-import s from './styles/style.module.css';
 import dropIcon from './images/dropIcon.svg';
+import styled from 'styled-components/macro';
 
-const UploadForm = ({ filePicker, handleInputChange, multiple, accept }) => {
+export default function UploadForm({ filePicker, handleInputChange, multiple, accept }) {
   return (
     <>
-      <img src={dropIcon} alt="drop files here" className={s.upload__icon} />
-      <div className={s.inputWrapper}>
+      <Icon src={dropIcon} alt="drop files here" />
+      <div>
         <input
           type="file"
           name="file"
@@ -18,12 +18,24 @@ const UploadForm = ({ filePicker, handleInputChange, multiple, accept }) => {
           multiple={multiple}
         />
         <label htmlFor="fileElem">
-          <strong className={s.label__strong}>Choose a file </strong>
+          <BoldLabel>Choose a file </BoldLabel>
           or drag it here
         </label>
       </div>
     </>
   );
-};
+}
 
-export default UploadForm;
+const Icon = styled.img`
+  margin: clamp(calc(2 * var(--unit)), calc(3 * var(--unit)), calc(4 * var(--unit)));
+`;
+
+const BoldLabel = styled.strong`
+  display: block;
+  padding-bottom: 4px;
+  font-weight: bold;
+  color: black;
+  &:hover {
+    color: dimgray;
+  }
+`;

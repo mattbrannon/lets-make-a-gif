@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 import { Router } from '@reach/router';
 
 import VideoConverter from './components/VideoConverter/ConvertVideo';
@@ -9,7 +8,7 @@ import NotFoundPage from './components/NotFoundPage/NotFoundPage';
 
 const App = () => {
   return (
-    <div className="App">
+    <div>
       <Router>
         <HomePage path="/" />
         <ImageConverter path="image" />

@@ -21,6 +21,7 @@ export const uploadVideo = async (data, callback) => {
 export const uploadImages = async (data) => {
   try {
     const response = await axios.post('/upload-images', data);
+    console.log('RESPONSE', response);
     return await response.data;
   } catch (error) {
     console.log('AXIOS ERROR ->', error.message);
@@ -46,12 +47,8 @@ export const generateHash = (filename) => {
     let result = '';
     const view = new DataView(hash);
     for (let i = 0; i < hash.byteLength; i += 4) {
-      result += ('00000000' + view.getUint32(i).toString(16)).slice(
-        -8
-      );
+      result += ('00000000' + view.getUint32(i).toString(16)).slice(-8);
     }
     return result;
   });
 };
-
-// export default uploadVideo;

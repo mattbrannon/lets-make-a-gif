@@ -1,17 +1,26 @@
+import styled from 'styled-components/macro';
+
 import React from 'react';
-import s from './styles/style.module.css';
+
 const Instructions = ({ instructions }) => {
   return (
-    <div className={s.instructions}>
+    <Wrapper>
       <h3>Instructions:</h3>
       <ul>
-        {instructions.map(instruction => {
+        {instructions.map((instruction) => {
           return <li key={Math.random()}>{instruction}</li>;
         })}
       </ul>
-    </div>
+    </Wrapper>
   );
 };
+
+const Wrapper = styled.div`
+  text-align: start;
+  margin: clamp(calc(2 * var(--unit)), 5vh, calc(5 * var(--unit)))
+    clamp(calc(2 * var(--unit)), 3vw, calc(5 * var(--unit)));
+  color: #000;
+`;
 
 // const arr = [
 //   `Choose a video file on your computer that you'd like to convert to a gif`,

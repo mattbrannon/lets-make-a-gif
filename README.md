@@ -1,24 +1,33 @@
-# Let's make a gif
+# Let's Make a Gif
 
-This is (or soon will be) a website that allows users to
+![](/public/assets/sample1.gif)
 
-- upload a video file and convert it to a gif.
-- upload a series of images and convert them to a video or gif.
+---
+Quickly convert still image frames to a video or gif
+Convert video files to a gif. Supports most major formats
+Download and save newly created gifs to your computer
 
-Other possible functions of the site include:
+---
 
-- video compression (allow users to upload a large file and download a compressed version)
-- video / image cropping
-- splicing mulitple videos together
+### Completed
+- [x] upload a video file and download it as a gif
+- [x] convert a series of images to a gif or video
 
-All of this functionality can be accomplished quite easily with [ffmpeg](https://ffmpeg.org/)
+### In progress
+- [ ] video / image cropping
+
+---
+
+### Roadmap
+  - color adjustments
+  - video compression 
+  - video resizing
+
+---
+Built with:
+-  __[React](https://reactjs.org/)__
+- __[ffmpeg](https://ffmpeg.org/)__
 
 
-## Reminder
-A folder named `uploads` and a folder named `images` are expected at the root of the project
 
-*Empty folders are **NOT** uploaded to github*
 
-To work around this, these folders currently contain a `.info` file.
-
-Feel free to remove delete this file as it's just a placeholder to ensure folder is pushed to the repo

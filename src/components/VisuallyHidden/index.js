@@ -1,0 +1,44 @@
+import { useState, useEffect } from 'react';
+import styled from 'styled-components/macro';
+
+const VisuallyHidden = ({ children, ...props }) => {
+  const [ forceShow, setForceShow ] = useState(false);
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      const handleKeyDown = ev => {
+        if (ev.key === 'Alt') {
+          setForceShow(true);
+        }
+      };
+      const handleKeyUp = ev => {
+        if (ev.key === 'Alt') {
+          setForceShow(false);
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener('keyup', handleKeyUp);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('keydown', handleKeyUp);
+      };
+    }
+  }, []);
+  if (forceShow) {
+    return children;
+  }
+  return <HiddenElement {...props}>{children}</HiddenElement>;
+};
+
+export default VisuallyHidden;
+
+const HiddenElement = styled.span`
+  display: inline-block;
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  height: 1;
+  width: 1;
+  margin: -1;
+  padding: 0;
+  border: 0;
+`;

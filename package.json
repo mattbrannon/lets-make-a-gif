@@ -26,9 +26,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server:dev": "nodemon server/index.js",
-    "api:dev": "nodemon server/api.js",
-    "dev": "concurrently \"npm run server:dev\" \"npm run api:dev\"",
-    "api": "node server/api.js",
     "server": "node server/index.js",
     "prod": "npm run build && npm run server",
     "deploy": "pm2 deploy ecosystem.config.js development"

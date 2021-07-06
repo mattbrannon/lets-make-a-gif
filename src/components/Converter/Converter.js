@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import Header from '../Header/Header';
 import DropZone from './DropZone';
 import DownloadButton from './DownloadButton';
 import ProgressMeter from './ProgressMeter';
@@ -135,7 +134,6 @@ class Converter extends Component {
   render() {
     return (
       <div>
-        <Header background />
         <Instructions
           instructions={
             this.state.type === 'video'

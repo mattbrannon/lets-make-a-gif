@@ -95,10 +95,10 @@ const ContentWrapper = styled.div`
   justify-content: space-between;
 `;
 
-const NavWrapper = styled.nav`
-  display: flex;
-  gap: 32px;
-`;
+// const NavWrapper = styled.nav`
+//   display: flex;
+//   gap: 32px;
+// `;
 
 const FirstWord = styled.span`
   color: var(--color1);

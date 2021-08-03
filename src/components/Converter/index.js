@@ -18,7 +18,7 @@ export default function ConverterPage({ children, kind, ...props }) {
   const [embossFilter, setEmbossFilter] = useState(false);
   const [flipFilter, setFlipFilter] = useState({ hflip: false, vflip: false });
   const [fpsFilter, setFpsFilter] = useState(false);
-  
+
   const filters = {
     colorFilter,
     embossFilter,
@@ -35,7 +35,7 @@ export default function ConverterPage({ children, kind, ...props }) {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const options = {
-    hue: { h: colorFilter.h, s: colorFilter.s, b: colorFilter.b},
+    hue: { h: colorFilter.h, s: colorFilter.s, b: colorFilter.b },
     emboss: embossFilter,
     fps: fpsFilter,
     vflip: flipFilter.vflip,
@@ -102,6 +102,7 @@ export default function ConverterPage({ children, kind, ...props }) {
   return (
     <Container>
       <DropZone onDragEnter={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}>
+        <FiltersPanel filters={filters} filterMethods={filterMethods} />
         <UploadForm onSubmit={(e) => e.preventDefault()}>
           <Label>
             <VisuallyHidden>
@@ -136,16 +137,19 @@ export default function ConverterPage({ children, kind, ...props }) {
             />
           )}
         </PreviewArea>
-        <FiltersPanel filters={filters} filterMethods={filterMethods} />
+
       </DropZone>
     </Container>
   );
 }
 
 const Container = styled.div`
-  display: flex;
+  /* max-width: 80ch;
+  width: 100%;
+  margin: 0 auto; */
+  /* display: flex;
   flex-direction: column;
-  align-content: center;
+  align-content: center; */
 `;
 
 const HiddenInput = styled.input.attrs({
@@ -157,16 +161,38 @@ const HiddenInput = styled.input.attrs({
   width: 0;
 `;
 
+// const DropZone = styled.div`
+//   min-height: var(--mainHeight);
+//   height: var(--mainHeight);
+
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: flex-start;
+//   align-items: center;
+//   gap: 32px;
+// `;
+
 const DropZone = styled.div`
   min-height: var(--mainHeight);
   height: var(--mainHeight);
-
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 32px;
+  position: relative;
+  max-width: 90ch;
+  width: 100%;
+  margin: 0 auto;
+  /* margin-left: 24px; */
+  background: lightgrey;
+  /* display: grid;
+  grid-template-columns: 1fr 4fr;
+  grid-template-areas: 
+  'settings main'
+  'settings main'
+  'settings preview'; */
+  /* grid-template-columns:  */
+  /* grid-template-rows: ; */
+  /* gasp: 32px; */
 `;
+
+
 
 const UploadForm = styled.form.attrs({
   encType: 'multipart/form-data',

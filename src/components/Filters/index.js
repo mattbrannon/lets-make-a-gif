@@ -156,13 +156,13 @@ const Container = styled.div`
 //   padding: 0 16px;
 // `;
 
-const Legend = styled.legend`
-  margin: 0 auto;
-  font-size: 1.2rem;
-  font-weight: 700;
-  padding: 0 16px;
-  transform: translateY(-16px);
-`;
+// const Legend = styled.legend`
+//   margin: 0 auto;
+//   font-size: 1.2rem;
+//   font-weight: 700;
+//   padding: 0 16px;
+//   transform: translateY(-16px);
+// `;
 
 const Input = styled.input`
   justify-self: center;

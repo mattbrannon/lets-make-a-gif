@@ -28,11 +28,10 @@ const imageFileFilter = (req, file, cb) => {
 const imageLimits = {
   fieldNameSize: 100,
   fieldSize: 1024,
-  fields: 1,
   fileSize: 2.5e8,
-  files: 400,
-  parts: 2000,
-  headerPairs: 100,
+  // files: 400,
+  // parts: 2000,
+  // headerPairs: 100,
 };
 
 const imageUpload = multer({

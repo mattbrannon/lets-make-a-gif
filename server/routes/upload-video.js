@@ -4,6 +4,7 @@ module.exports = (app) => {
   const { handleVideoStream } = require('../../api');
 
   router.post('/', videoUpload.single('file'), async (req, res, next) => {
+    // console.log(req.body);
     await handleVideoStream(req, res, next);
   });
 

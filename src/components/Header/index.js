@@ -1,71 +1,58 @@
 import styled, { keyframes } from 'styled-components/macro';
+import MaxWidthWrapper from '../MaxWidthWrapper';
+import { Link } from '@reach/router';
 
 const shift = keyframes`
   0%{
-    --a: var(--color1);
-    --b: var(--color2);
-    --c: var(--color3);
+    --color1: var(--green);
+    --color2: var(--purple);
+    --color3: var(--orange);
   }
   25%{
-    --a: var(--color3);
-    --b: var(--color1);
-    --c: var(--color2);
+    --color1: var(--orange);
+    --color2: var(--green);
+    --color3: var(--purple);
   }
 
   50%{
-    --a: var(--color2);
-    --b: var(--color3);
-    --c: var(--color1);
+    --color1: var(--purple);
+    --color2: var(--orange);
+    --color3: var(--green);
   }
 
   75%{
-    --a: var(--color3);
-    --b: var(--color1);
-    --c: var(--color2);
+    --color1: var(--orange);
+    --color2: var(--green);
+    --color3: var(--purple);
   }
 
   100%{
-    --a: var(--color1);
-    --b: var(--color2);
-    --c: var(--color3);
+    --color1: var(--green);
+    --color2: var(--purple);
+    --color3: var(--orange);
   }
 
 `;
 
 const MainText = styled.h1`
-  background: linear-gradient(
-    90deg,
-    var(--a) 0%,
-    var(--a) 30%,
-    var(--b) 30%,
-    var(--b) 66%,
-    var(--c) 66%,
-    var(--c) 100%
-  );
-
-  /* background: repeating-linear-gradient(white 0%, white 1%, black 1%, black 2%); */
+  background: repeating-linear-gradient(white 0px, white 5px, black 5px, black 10px);
 
   -webkit-background-clip: text;
   background-clip: text;
-  --webkit-text-fill-color: currentColor;
-  color: transparent;
-  filter: drop-shadow(0.04em 0.04em 0.01em #222);
-
-  /* text-align: center; */
+  filter: drop-shadow(0.05em 0.05em 0.01em #222);
 
   animation: ${shift} 3000ms infinite;
 `;
 
 const TextWrapper = styled.div`
   position: relative;
+  --green: hsla(90deg, 100%, 35%, 0.8);
+  --purple: hsla(330deg, 100%, 55%, 0.8);
+  --orange: hsla(30deg, 100%, 55%, 0.8);
 
-  --color1: hsla(90deg, 100%, 55%, 0.8);
-  --color2: hsla(330deg, 100%, 55%, 0.8);
-  --color3: hsla(30deg, 100%, 55%, 0.8);
-
-  --a: var(--color1);
-  --b: var(--color2);
-  --c: var(--color3);
+  --color1: var(--green);
+  --color2: var(--purple);
+  --color3: var(--orange);
 
   width: 100%;
   height: 100%;
@@ -75,24 +62,58 @@ const TextWrapper = styled.div`
   align-items: center;
 `;
 
-
-export default function Header ({ children, ...props }) {
-  // const randomColor = () => '#' + Math.random().toString(16).slice(2, 8);
-
+export default function Header({ children, ...props }) {
   const Component = props.sticky ? StickyRow : props.fixed ? FixedRow : Row;
   return (
     <Wrapper {...props}>
       <Component {...props}>
-        <TextWrapper {...props}>
-          <MainText {...props}>{children}</MainText>
-        </TextWrapper>
+        <MaxWidthWrapper size="90ch">
+          <ContentWrapper>
+
+            <TextWrapper {...props}>
+              <Link to="/">
+              <MainText {...props}>
+                <FirstWord>Let's </FirstWord>
+                <SecondWord>Make </SecondWord>
+                <ThirdWord>a Gif</ThirdWord>
+              </MainText>
+              </Link>
+            
+            </TextWrapper>
+
+          </ContentWrapper>
+        </MaxWidthWrapper>
       </Component>
     </Wrapper>
   );
 }
 
+
+
+const ContentWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const NavWrapper = styled.nav`
+  display: flex;
+  gap: 32px;
+`;
+
+const FirstWord = styled.span`
+  color: var(--color1);
+`;
+const SecondWord = styled.span`
+  color: var(--color2);
+`;
+const ThirdWord = styled.span`
+  color: var(--color3);
+`;
+
 export const Wrapper = styled.header`
   height: var(--headerHeight);
+  /* grid-column: 1 / span 2;
+  grid-row: 1; */
   position: relative;
 `;
 
@@ -100,10 +121,10 @@ const Row = styled.div`
   height: inherit;
 
   background: aliceblue;
-  background: ${props => Object.keys(props)[0]};
+  background: ${(props) => Object.keys(props)[0]};
 
   display: flex;
-  align-items: baseline;
+  align-items: center;
   padding: 1rem;
   gap: 16px;
   /* &:first-child {

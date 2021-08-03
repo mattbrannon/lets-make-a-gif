@@ -84,9 +84,10 @@ a {
 }
 
 :root {
-  --headerHeight: 120px;
+  --headerHeight: 70px;
   --mainHeight: calc(100vh - var(--headerHeight));
-  --pageWidth: 80ch;
+  
+  --pageWidth: 60ch;
   --unit: 0.5rem;
 
   --dodger-blue: #1e90ffff;

@@ -29,7 +29,7 @@
     "dev": "concurrently -k \"yarn server:dev\" \"yarn start\"",
     "server": "node server/index.js",
     "prod": "yarn build && yarn server",
-    "deploy": "pm2 deploy ecosystem.config.js development"
+    "deploy": "pm2 deploy ecosystem.config.js production"
   },
   "eslintConfig": {
     "extends": [

@@ -25,9 +25,4 @@ yarn-error.log*
 
 .eslintcache
 
-private
-copies
-gifs
-images
-output
-videos
+media

@@ -9,6 +9,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.1",
+    "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
     "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^10.0.0",
@@ -24,12 +25,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "api:dev": "nodemon server/api.js",
     "server:dev": "nodemon server/index.js",
     "dev": "concurrently -k \"yarn server:dev\" \"yarn start\"",
-    "api": "node server/api.js",
     "server": "node server/index.js",
-    "prod": "npm run build && npm run server",
+    "prod": "yarn build && yarn server",
     "deploy": "pm2 deploy ecosystem.config.js development"
   },
   "eslintConfig": {

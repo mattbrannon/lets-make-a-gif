@@ -1,27 +1,28 @@
-const path = require('path');
-const fs = require('fs-extra');
-
-const sendFileToClient = (req, res, next) => {
-  const filepath = path.join(__dirname, '../../media/downloads');
-  const filename = fs.readdirSync(filepath)[0];
-  const file = path.join(filepath, filename);
-  fs.createReadStream(file).pipe(res);
-  next();
-};
-
-const cleanUp = () => {
-  const downloads = path.join(__dirname, '../../media/downloads');
-  const videos = path.join(__dirname, '../../media/uploads/videos');
-  const images = path.join(__dirname, '../../media/uploads/images');
-  fs.emptyDirSync(images);
-  fs.emptyDirSync(videos);
-  fs.emptyDirSync(downloads);
-};
-
 module.exports = (app) => {
   const router = require('express').Router();
+  const path = require('path');
+  const fs = require('fs-extra');
 
-  router.get('/', sendFileToClient, cleanUp);
+  router.get('/', (req, res) => {
+    try {
+      const userId = req.headers.cookie.split('=')[1];
+      // const isSingleFile = fs.readdirSync(path.join(__dirname, `../../media/${userId}/images`)).length === 1;
 
-  app.use('/download', router);
+      // const folder = isSingleFile
+      //   ? path.join(__dirname, `../../media/${userId}/copies`)
+      //   : path.join(__dirname, `../../media/${userId}/output`);
+      const folder = path.join(__dirname, `../../media/${userId}/output`);
+      const file = fs.readdirSync(folder)[0];
+
+      const ext = file.split('.').slice(-1);
+      const filename = file.split('.').slice(0, -1);
+
+      const filepath = `${folder}/${filename}.${ext}`;
+      fs.createReadStream(filepath).pipe(res);
+    } catch (error) {
+      res.send(error.message);
+    }
+  });
+
+  app.use('/api/download', router);
 };

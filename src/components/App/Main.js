@@ -138,6 +138,8 @@ export default function Main({ kind }) {
   return (
     <>
       <MainGrid>
+        <Image source={source} size={size} />
+        <UploadForm kind={kind} handleFileUpload={handleFileUpload} />
         <FiltersPanel setIsOpen={setIsOpen} frames={frames} data={{ ...data, filter, applyFilters }} />
       </MainGrid>
     </>
@@ -152,8 +154,11 @@ export default function Main({ kind }) {
 
 const MainGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr minmax(min(320px, 100%), 1fr) 1fr;
+  /* grid-template-columns: 1fr minmax(min(320px, 100%), 1fr) 1fr; */
   /* grid-template-rows: 40px minmax(280px, 1fr) 40px max-content; */
+
+  grid-template-columns: 20vw 60vw 20vw;
+  grid-template-rows: 30vh 5vh auto;
   justify-content: center;
   height: 100%;
 `;
@@ -166,6 +171,8 @@ const PreviewImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: contain;
+  grid-column: 1 / -1;
+  grid-row: 1;
 `;
 
 const removeFileExtension = (filename) => {

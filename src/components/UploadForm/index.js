@@ -26,7 +26,7 @@ const FormWrapper = styled.form.attrs({
   text-align: center;
   margin: 16px 0;
   grid-column: 2;
-  grid-row: 1;
+  grid-row: 2
   align-self: end;
 `;
 

@@ -20,6 +20,7 @@ export default function Main({ kind }) {
   const [ error, setError ] = useState('');
   const [ frames, setFrames ] = useState(0);
   const [ path, setPath ] = useState('');
+  const [ isOpen, setIsOpen ] = useState(false);
 
   const [ percentComplete, setPercentComplete ] = useState(0);
   const [ status, setStatus ] = useState({ isUpdating: false, isError: false, isUploading: false });
@@ -35,6 +36,8 @@ export default function Main({ kind }) {
     update,
     error,
     frames,
+    isOpen,
+    setIsOpen,
   });
 
   useEffect(() => {
@@ -45,9 +48,9 @@ export default function Main({ kind }) {
   }, [ status ]);
 
   useEffect(() => {
-    setData({ source, backup, size, filename, percentComplete, status, frames, error, update });
+    setData({ source, backup, size, filename, percentComplete, status, frames, error, update, isOpen });
     // console.log({ source, size, filename, percentComplete, status, frames, error, update });
-  }, [ source, backup, size, filename, percentComplete, status, frames, path ]);
+  }, [ source, backup, size, filename, percentComplete, status, frames, path, isOpen ]);
 
   const handleError = (error) => {
     setStatus({ ...status, isError: true });
@@ -135,14 +138,17 @@ export default function Main({ kind }) {
   return (
     <>
       <MainGrid>
-        <UploadForm kind={kind} handleFileUpload={handleFileUpload} />
-        <ContentArea {...data} />
-        {showStatus ? <StatusInfo {...data} /> : <DownloadButton {...data} />}
-        <FiltersPanel frames={frames} data={{ ...data, filter, applyFilters }} />
+        <FiltersPanel setIsOpen={setIsOpen} frames={frames} data={{ ...data, filter, applyFilters }} />
       </MainGrid>
     </>
   );
 }
+
+{
+  /* <UploadForm kind={kind} handleFileUpload={handleFileUpload} />
+<ContentArea {...data} /> */
+}
+// {showStatus ? <StatusInfo {...data} /> : <DownloadButton {...data} />}
 
 const MainGrid = styled.div`
   display: grid;
@@ -150,6 +156,16 @@ const MainGrid = styled.div`
   /* grid-template-rows: 40px minmax(280px, 1fr) 40px max-content; */
   justify-content: center;
   height: 100%;
+`;
+
+function Image({ size, source, backup }) {
+  return <PreviewImage size={size} src={source || backup} />;
+}
+
+const PreviewImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 `;
 
 const removeFileExtension = (filename) => {

@@ -1,11 +1,12 @@
 import styled from 'styled-components/macro';
 import Toggle from '../Toggle';
 import SubmitButton from '../SubmitButton';
+import MaxWidthWrapper from '../MaxWidthWrapper';
 // import { useEffect } from 'react';
 
-export default function FiltersPanel({ frames, ...data }) {
+export default function FiltersPanel({ setIsOpen, frames, ...data }) {
   const {
-    data: { filter, applyFilters, status },
+    data: { filter, applyFilters, status, isOpen },
   } = data;
 
   const {
@@ -26,9 +27,11 @@ export default function FiltersPanel({ frames, ...data }) {
   const maxTmix = Math.min(frames, 10);
   const fps = filters.framerate;
 
+  console.log(isOpen);
+
   return (
     <Container>
-      <Grid>
+      <Grid isOpen={isOpen}>
         <Cell min="-1" max="360" value={keepHueInRange(hue)} name="hue" step="1.0" onChange={adjustHue} />
         <Cell min="-10" max="10" step="0.1" name="saturation" value={saturation} onChange={adjustHue} />
         <Cell min="-10" max="10" step="0.1" name="brightness" value={brightness} onChange={adjustHue} />
@@ -50,18 +53,61 @@ export default function FiltersPanel({ frames, ...data }) {
         <Cell handleToggle={handleToggle} name="vflip" />
         <Cell handleToggle={handleSpecial} name="greyscale" />
       </Grid>
-      <ButtonWrapper>
-        <SubmitButton status={status} applyFilters={applyFilters}>
+      <ButtonWrapper isOpen={isOpen}>
+        {/* <SubmitButton status={status} applyFilters={applyFilters}>
           Apply Filters
-        </SubmitButton>
+        </SubmitButton> */}
+        <Button isOpen={isOpen} setIsOpen={setIsOpen}>
+          Show Filters
+        </Button>
       </ButtonWrapper>
     </Container>
   );
 }
 
+function Button({ children, ...data }) {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    data.setIsOpen(!data.isOpen);
+  };
+
+  return (
+    <PanelButtonWrapper>
+      <ShowPanelButton onClick={handleSubmit}>{children}</ShowPanelButton>
+    </PanelButtonWrapper>
+  );
+}
+
+const ShowPanelButton = styled.button`
+  padding: 8px 16px;
+  font-size: 1rem;
+  font-weight: 800;
+  background: deeppink;
+  color: white;
+
+  border-radius: 8px;
+  border: none;
+  width: 100%;
+  &:hover {
+    background: hsl(328, 100%, 35%);
+    cursor: pointer;
+  }
+  &:disabled {
+    background: grey;
+  }
+`;
+
+const PanelButtonWrapper = styled(MaxWidthWrapper)`
+  border-radius: 10px;
+  align-self: start;
+  grid-column: 2;
+  grid-row: 2;
+  padding: 16px 0;
+`;
+
 const Container = styled.div`
-  background-color: hsla(40deg 35% 65% / 0.7);
-  border-top: 2px solid black;
+  /* background-color: hsla(40deg 35% 65% / 0.7);
+  border-top: 2px solid black; */
   position: relative;
   bottom: 0;
   left: 0;
@@ -81,9 +127,22 @@ const ButtonWrapper = styled.div`
   padding-top: 0;
   height: 100;
   background: beige;
+  z-index: ${(p) => p.isOpen && 0};
 `;
 
+// const Grid = styled.div`
+//   display: grid;
+//   grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+//   column-gap: 24px;
+//   justify-items: center;
+//   grid-row: 2;
+//   overflow-y: auto;
+//   margin: auto 0;
+//   max-height: 380px;
+// `;
+
 const Grid = styled.div`
+  ${(p) => console.log(p.isOpen)};
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
   column-gap: 24px;
@@ -92,6 +151,14 @@ const Grid = styled.div`
   overflow-y: auto;
   margin: auto 0;
   max-height: 380px;
+  position: fixed;
+  bottom: ${(p) => (p.isOpen ? '60px' : '-50%')};
+  z-index: ${(p) => !p.isOpen && -1};
+  width: 100%;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  background: hsl(40deg, 35%, 75%);
+  transition: bottom 0.2s linear;
 `;
 
 const Label = styled.label`

@@ -4,7 +4,7 @@ import SubmitButton from '../SubmitButton';
 import MaxWidthWrapper from '../MaxWidthWrapper';
 // import { useEffect } from 'react';
 
-export default function FiltersPanel({ setIsOpen, frames, ...data }) {
+export default function FiltersPanel({ size, setIsOpen, frames, ...data }) {
   const {
     data: { filter, applyFilters, status, isOpen },
   } = data;
@@ -30,8 +30,8 @@ export default function FiltersPanel({ setIsOpen, frames, ...data }) {
   console.log(isOpen);
 
   return (
-    <Container>
-      <Grid isOpen={isOpen}>
+    <>
+      <Grid size={size} isOpen={isOpen}>
         <Cell min="-1" max="360" value={keepHueInRange(hue)} name="hue" step="1.0" onChange={adjustHue} />
         <Cell min="-10" max="10" step="0.1" name="saturation" value={saturation} onChange={adjustHue} />
         <Cell min="-10" max="10" step="0.1" name="brightness" value={brightness} onChange={adjustHue} />
@@ -58,10 +58,10 @@ export default function FiltersPanel({ setIsOpen, frames, ...data }) {
           Apply Filters
         </SubmitButton> */}
         <Button isOpen={isOpen} setIsOpen={setIsOpen}>
-          Show Filters
+          {isOpen ? 'Hide Filters' : 'Show Filters'}
         </Button>
       </ButtonWrapper>
-    </Container>
+    </>
   );
 }
 
@@ -84,6 +84,7 @@ const ShowPanelButton = styled.button`
   font-weight: 800;
   background: deeppink;
   color: white;
+  min-width: 130px;
 
   border-radius: 8px;
   border: none;
@@ -106,8 +107,8 @@ const PanelButtonWrapper = styled(MaxWidthWrapper)`
 `;
 
 const Container = styled.div`
-  /* background-color: hsla(40deg 35% 65% / 0.7);
-  border-top: 2px solid black; */
+  background: hsl(40deg, 35%, 75%);
+  /* border-top: 2px solid black; */
   position: relative;
   bottom: 0;
   left: 0;
@@ -117,6 +118,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  padding: 48px 0;
   /* max-height: 380px; */
 `;
 
@@ -128,6 +130,10 @@ const ButtonWrapper = styled.div`
   height: 100;
   background: beige;
   z-index: ${(p) => p.isOpen && 0};
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
 `;
 
 // const Grid = styled.div`
@@ -142,7 +148,7 @@ const ButtonWrapper = styled.div`
 // `;
 
 const Grid = styled.div`
-  ${(p) => console.log(p.isOpen)};
+  ${(p) => console.log(p.size)};
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
   column-gap: 24px;
@@ -150,15 +156,18 @@ const Grid = styled.div`
   grid-row: 2;
   overflow-y: auto;
   margin: auto 0;
-  max-height: 380px;
+  max-height: ${(p) => p.size.height / 2 + 'px'};
   position: fixed;
-  bottom: ${(p) => (p.isOpen ? '60px' : '-50%')};
+  bottom: ${(p) => (p.isOpen ? '60px' : '-100%')};
   z-index: ${(p) => !p.isOpen && -1};
   width: 100%;
   border-top: 2px solid black;
   border-bottom: 2px solid black;
+  padding: 0 24px;
+  min-height: 80px;
+
   background: hsl(40deg, 35%, 75%);
-  transition: bottom 0.2s linear;
+  transition: bottom 0.3s linear;
 `;
 
 const Label = styled.label`

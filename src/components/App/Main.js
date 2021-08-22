@@ -138,13 +138,46 @@ export default function Main({ kind }) {
   return (
     <>
       <MainGrid>
-        <Image source={source} size={size} />
-        <UploadForm kind={kind} handleFileUpload={handleFileUpload} />
-        <FiltersPanel setIsOpen={setIsOpen} frames={frames} data={{ ...data, filter, applyFilters }} />
+        <Preview {...data} />
+        <ButtonGroup>
+          <UploadForm kind={kind} handleFileUpload={handleFileUpload} />
+          {source && <DownloadButton {...data} />}
+        </ButtonGroup>
+
+        <FiltersPanel
+          size={size}
+          setIsOpen={setIsOpen}
+          frames={frames}
+          data={{ ...data, filter, applyFilters }}
+        />
       </MainGrid>
     </>
   );
 }
+
+const ButtonGroup = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  margin: clamp(8px, 0.25vw + 0.5rem, 32px);
+  /* gap: clamp(16px, 0.25vw + 0.25rem, 32px); */
+  /* gap: 48px; */
+  padding: 16px;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  align-self: end;
+
+  align-items: flex-end;
+  /* justify-content: center; */
+
+  transform: translate(0px, 64px);
+  @media (min-width: 420px) {
+    width: 50vw;
+
+    transform: translate(0px, -32px);
+    align-items: center;
+  }
+`;
 
 {
   /* <UploadForm kind={kind} handleFileUpload={handleFileUpload} />
@@ -152,27 +185,47 @@ export default function Main({ kind }) {
 }
 // {showStatus ? <StatusInfo {...data} /> : <DownloadButton {...data} />}
 
+// const MainGrid = styled.div`
+//   display: grid;
+//   /* grid-template-columns: 1fr minmax(min(320px, 100%), 1fr) 1fr; */
+//   /* grid-template-rows: 40px minmax(280px, 1fr) 40px max-content; */
+
+//   grid-template-columns: 20vw 60vw 20vw;
+//   grid-template-rows: 35vh 5vh auto;
+//   justify-content: center;
+//   height: 100%;
+// `;
+
 const MainGrid = styled.div`
   display: grid;
-  /* grid-template-columns: 1fr minmax(min(320px, 100%), 1fr) 1fr; */
-  /* grid-template-rows: 40px minmax(280px, 1fr) 40px max-content; */
+  grid-template-areas:
+    'top top top'
+    'mid mid mid'
+    'bot bot bot';
 
   grid-template-columns: 20vw 60vw 20vw;
-  grid-template-rows: 30vh 5vh auto;
+  /* grid-template-rows: 25vh 5vh calc(50vh - var(--headerHeight)) 10vh; */
   justify-content: center;
-  height: 100%;
+  height: inherit;
 `;
 
-function Image({ size, source, backup }) {
-  return <PreviewImage size={size} src={source || backup} />;
-}
+const Preview = ({ ...data }) => {
+  return <Image size={data.size} src={data.source} />;
+};
 
-const PreviewImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+const Image = styled.img`
+  /* width: 100%;
+  height: auto; */
   grid-column: 1 / -1;
   grid-row: 1;
+  /* max-width: 240px; */
+  max-width: ${(p) => p.size.height / 1.7 + 'px'};
+  max-height: ${(p) => p.size.width / 2 + 'px'};
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  justify-self: center;
+  /* place-self: center; */
 `;
 
 const removeFileExtension = (filename) => {

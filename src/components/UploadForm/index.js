@@ -13,7 +13,7 @@ export default function UploadForm({ kind, handleFileUpload }) {
   return (
     <FormWrapper onSubmit={(e) => e.preventDefault()}>
       <Filepicker kind={kind} onChange={handleUpload} />
-      <Label tabIndex={0}>Upload some files</Label>
+      <Label tabIndex={0}>Upload files</Label>
     </FormWrapper>
   );
 }
@@ -23,11 +23,11 @@ const FormWrapper = styled.form.attrs({
   method: 'post',
   encType: 'multipart/form-data',
 })`
-  text-align: center;
-  margin: 16px 0;
-  grid-column: 2;
-  grid-row: 2
-  align-self: end;
+  text-align: left;
+  /* margin: 16px auto 0 auto; */
+  /* grid-column: 2;
+  grid-row: 1; */
+  /* align-self: end; */
 `;
 
 const Filepicker = styled.input.attrs((p) => {
@@ -47,7 +47,7 @@ const Filepicker = styled.input.attrs((p) => {
 const Label = styled.label.attrs({
   htmlFor: 'fileUpload',
 })`
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: deeppink;
   font-weight: 700;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

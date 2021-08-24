@@ -72,6 +72,11 @@ const buildArgs = (obj) => {
     .join(':');
 };
 
+const sanitizeInput = (value, min = 0, max = 1) => {
+  const result = value < min ? min : value > max ? max : value;
+  return Math.abs(result) || min;
+};
+
 export const useFilters = () => {
   const [ filters, setFilters ] = useState(initialFilters);
   const [ filterString, setFilterString ] = useState('');
@@ -192,8 +197,13 @@ export const useFilters = () => {
     setFilters({ ...filters, [e.target.name]: { ...name, active: e.target.checked } });
   };
 
+  const handleNumbers = (e) => {
+    return sanitizeInput(Number(e.target.value), e.target.min, e.target.max);
+  };
+
   const adjustHue = (e) => {
-    const value = Number(e.target.value);
+    // const value = Number(e.target.value);
+    const value = handleNumbers(e);
     const key = e.target.name.charAt(0);
     const { hue } = filters;
     setFilters({ ...filters, hue: { ...hue, [key]: value } });
@@ -201,14 +211,16 @@ export const useFilters = () => {
 
   const adjustEq = (e) => {
     const { eq } = filters;
-    const value = Number(e.target.value);
+    // const value = Number(e.target.value);
+    const value = handleNumbers(e);
     const name = e.target.name;
     setFilters({ ...filters, eq: { ...eq, [name]: value } });
   };
 
   const adjustFrei0r = (e) => {
     const { frei0r } = filters;
-    let value = Number(e.target.value);
+    // let value = Number(e.target.value);
+    let value = handleNumbers(e);
     if (e.target.name === 'cartoon') {
       value = value === 0 ? value : toCartoonValue(e.target.value);
     }
@@ -217,7 +229,8 @@ export const useFilters = () => {
 
   const adjustTmix = (e) => {
     const { tmix } = filters;
-    const value = Number(e.target.value);
+    // const value = Number(e.target.value);
+    const value = handleNumbers(e);
     if (value === 0) {
       const prev = tmix.frames;
       const clone = [ ...data ].filter((v) => v !== `tmix=frames=${prev}`);

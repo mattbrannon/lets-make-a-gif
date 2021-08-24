@@ -36,11 +36,11 @@ const initialFilters = {
   },
   glitch: {
     active: false,
-    value: 'frei0r=glitch0r:0.04|0.08|0.03|0.07',
+    value: 'frei0r=glitch0r:0.04|0.08|0.15|0.07',
   },
   cartoon: {
     active: false,
-    value: 'frei0r=cartoon:0.800',
+    value: 'frei0r=cartoon:0.95',
   },
   greyscale: {
     active: false,
@@ -49,7 +49,6 @@ const initialFilters = {
   frei0r: {
     rgbnoise: '',
     vertigo: '',
-    cartoon: '',
   },
   framerate: 1,
   hflip: false,
@@ -59,7 +58,8 @@ const initialFilters = {
 };
 
 function toCartoonValue(n) {
-  return Number((9 / 10 + n * 0.001).toFixed(3));
+  // return Number((9 / 10 + n * 0.001).toFixed(3));
+  return n.toString().split('.').map((v, i) => i === 1 ? `9${v}` : v).join('.')
 }
 
 const buildArgs = (obj) => {
@@ -224,7 +224,7 @@ export const useFilters = () => {
     if (e.target.name === 'cartoon') {
       value = value === 0 ? value : toCartoonValue(e.target.value);
     }
-    setFilters({ ...filters, frei0r: { ...frei0r, [e.target.name]: value } });
+    setFilters({ ...filters, frei0r: { ...frei0r, [e.target.name]: Number(value) } });
   };
 
   const adjustTmix = (e) => {

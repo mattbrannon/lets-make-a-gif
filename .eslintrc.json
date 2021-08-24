@@ -19,7 +19,11 @@
       "useCache": true
     }
   },
-  "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:prettierx/default"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:prettierx/default"
+  ],
   "plugins": ["prettierx"],
   "rules": {
     "no-var": "error",
@@ -33,7 +37,7 @@
         "arrayBracketSpacing": true,
         "breakBeforeElse": true,
         "semi": true,
-        "printWidth": 110,
+        "printWidth": 120,
         "offsetTernaryExpressions": false,
         "singleQuote": true,
         "breakLongMethodChains": true

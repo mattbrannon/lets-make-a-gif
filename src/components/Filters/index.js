@@ -26,6 +26,11 @@ export default function FiltersPanel({ size, setIsOpen, frames, ...data }) {
   const tmix = filters.tmix.frames || 0;
   const maxTmix = Math.min(frames, 10);
   const fps = filters.framerate;
+  const gamma = filters.eq.gamma;
+  const contrast = filters.eq.contrast;
+  const noise = filters.frei0r.rgbnoise;
+  const vertigo = filters.frei0r.vertigo;
+  const cartoon = filters.frei0r.cartoon;
 
   console.log(isOpen);
 
@@ -37,11 +42,11 @@ export default function FiltersPanel({ size, setIsOpen, frames, ...data }) {
         <Cell min="-10" max="10" step="0.1" name="brightness" value={brightness} onChange={adjustHue} />
         <Cell min="1" max="120" step="1.0" value={fps} name="framerate" onChange={adjustFramerate} />
         <Cell min="-10" max="100" step="0.1" name="contrast" onChange={adjustEq} />
-        <Cell min="0" max="10" step="0.1" name="gamma" onChange={adjustEq} />
+        <Cell min="0" max="10" step="0.1" name="gamma" value={gamma} onChange={adjustEq} />
         <Cell id="tmix" min="0" max={maxTmix} name="tmix" value={tmix} onChange={adjustTmix} />
-        <Cell id="rgbnoise" min="0.0" max="1.0" step="0.01" name="rgbnoise" onChange={adjustFrei0r} />
-        <Cell id="vertigo" min="0.0" max="1.0" step="0.01" name="vertigo" onChange={adjustFrei0r} />
-        <Cell id="cartoon" min="0" max="100" name="cartoon" step="1" onChange={adjustFrei0r} />
+        <Cell id="rgbnoise" min="0.0" max="1.0" step="0.01" name="rgbnoise" value={noise} onChange={adjustFrei0r} />
+        <Cell id="vertigo" min="0.0" max="1.0" step="0.01" name="vertigo" value={vertigo} onChange={adjustFrei0r} />
+        <Cell handleToggle={handleToggle} name="cartoon" />
         <Cell handleToggle={handleToggle} name="negate" />
         <Cell handleToggle={handleSpecial} name="emboss" />
         <Cell handleToggle={handleSpecial} name="sepia" />

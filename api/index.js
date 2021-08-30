@@ -2,6 +2,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const ffprobe = ffmpeg.ffprobe;
+const { parseRequest, getPathToFolder, getGlobPattern } = require('./utils');
+// const { makeCopies } = require('./resize');
 
 const getFps = (file) => {
   return new Promise((resolve, reject) => {
@@ -19,85 +21,108 @@ const getFps = (file) => {
   });
 };
 
-const createGifFromImages = async ({ framerate, filter, userId }) => {
-  const ext = fs
-    .readdirSync(path.join(__dirname, `../media/${userId}/images`))[0]
-    .split('.')
-    .slice(-1);
-
-  const globPattern = path.join(__dirname, `../media/${userId}/images`, `*.${ext}`);
-  const output = path.join(__dirname, `../media/${userId}/output`);
-
-  const lavfi = filter.length
-    ? filter + ',split [a][b]; [a] palettegen [P]; [b][P] paletteuse'
-    : 'split [a][b]; [a] palettegen [P]; [b][P] paletteuse';
-
-  return ffmpeg(globPattern)
-    .inputOptions([ '-y', '-f image2', `-framerate ${framerate}`, '-pattern_type glob' ])
-    .complexFilter(lavfi)
-    .outputOptions([ '-f gif' ])
-    .save(`${output}/images.gif`);
+const getDimensions = async (file) => {
+  return new Promise((resolve, reject) => {
+    ffprobe(file, (error, data) => {
+      if (error) reject(error);
+      const { width, height } = data.streams[0];
+      resolve({ width, height });
+    });
+  });
 };
 
-const createGifFromVideo = async ({ filter, userId }) => {
-  const outputFolder = path.join(__dirname, `../media/${userId}/output`);
-  const inputFolder = path.join(__dirname, `../media/${userId}/videos`);
-  const inputFile = fs.readdirSync(inputFolder)[0];
-  const input = path.resolve(inputFolder, inputFile);
-  const filename = path.parse(input).name;
-  const output = path.resolve(outputFolder, `${filename}.gif`);
+const createGifFromImages = async ({ pathToInput, pathToOutput, framerate, filterString }) => {
+  // const imageFolder = getPathToFolder('images', userId);
+  // const outputFolder = getPathToFolder('output', userId);
+  // const { globPattern } = getGlobPattern(imageFolder);
 
-  const fps = await getFps(input);
+  // const first = fs.readdirSync(imageFolder)[0];
+  // const size = await getDimensions(path.resolve(imageFolder, first));
 
-  const lavfi = filter.length ? filter + `,fps=${fps},scale=w=480:h=-1` : `fps=${fps},scale=w=480:h=-1`;
+  // const lavfi = filter.length
+  //   ? filter + ',split [a][b]; [a] palettegen [P]; [b][P] paletteuse'
+  //   : 'split [a][b]; [a] palettegen [P]; [b][P] paletteuse';
 
-  return ffmpeg(input)
-    .inputOptions([ '-y' ])
-    .complexFilter(lavfi)
-    .outputOptions([ '-f gif', '-pix_fmt bgr8' ])
-    .save(output);
+  //  split [a][b]; [a] palettegen=stats_mode=single [P]; [b][P] paletteuse=new=1" -f gif -pix_fmt pal8 output.gif
+
+  const filter = filterString.length
+    ? '[0:v] ' + filterString + ',split [a][b]; [a] palettegen [P]; [b][P] paletteuse'
+    : '[0:v] split [a][b]; [a] palettegen [P]; [b][P] paletteuse';
+
+  console.log('inside createGifsFromImages', { pathToInput, pathToOutput, framerate, filter });
+  // if (filterString.length) {
+  return ffmpeg(pathToInput)
+    .inputOptions([ '-y', '-f image2', `-framerate ${framerate}`, '-pattern_type glob' ])
+    .complexFilter(filter)
+    .outputOptions([ '-f gif' ])
+    .save(pathToOutput);
+  // }
+  // return ffmpeg(pathToInput)
+  //   .inputOptions([ '-y', '-f image2', `-framerate ${framerate}`, '-pattern_type glob' ])
+  //   .outputOptions([ '-f gif' ])
+  //   .save(pathToOutput);
 };
 
 const handleImageStream = async (req, res, next) => {
-  const userId = req.userId;
+  // const { framerate } = parseRequest(req);
+  const userId = await res.locals.userId;
+  const userData = await req.app.locals[userId];
+  const { pathToInput, pathToOutput, filterString, framerate } = await userData;
+  console.log('inside handle imageStream', userData);
+  // const filterString = req.filter || '';
+  // console.log({ framerate, filterString });
+  // const config = { pathToInput, pathToOutput, framerate, filter };
 
-  const filters = typeof req.body.filters === 'string' ? JSON.parse(req.body.filters) : req.body.filters;
-  const numberOfFiles = fs.readdirSync(path.join(__dirname, `../media/${userId}/images`)).length;
+  console.log({ pathToInput, pathToOutput, framerate, filterString });
 
-  const framerate = filters.framerate || numberOfFiles;
-  const filter = req.body.filterString;
-
-  return await createGifFromImages({ framerate, filter, userId })
+  return await createGifFromImages({ pathToInput, pathToOutput, framerate, filterString })
     .then((command) => {
       command.on('end', () => {
-        res.status(201).send('success');
+        res.status(201).send({ framerate });
       });
       command.on('error', (error) => {
-        console.log('error', error);
         next(error);
       });
     })
     .catch((error) => {
-      console.error(error);
       next(error);
     });
 };
 
+const createGifFromVideo = async ({ pathToInput, pathToOutput, filter, fps }) => {
+  // const videoFilter = args.join(',');
+  const args = [ `fps=${Math.round(fps / 1.2)},scale=w=480:h=-1,split [a][b];[a] palettegen [p];[b][p] paletteuse` ];
+  if (filter) {
+    args.unshift(filter);
+  }
+
+  const videoFilter = args.join(',');
+
+  return ffmpeg(pathToInput)
+    .inputOptions([ '-y' ])
+    .complexFilter(videoFilter)
+    .outputOptions([ '-f gif' ])
+    .save(pathToOutput);
+};
+
 const handleVideoStream = async (req, res, next) => {
-  const filter = req.body.filterString;
-  const userId = req.userId;
-  return await createGifFromVideo({ filter, userId })
+  const { filter } = parseRequest(req);
+  const userId = res.locals.userId;
+  const userData = req.app.locals[userId];
+  const { pathToInput, pathToOutput } = userData;
+  console.log('inside handle videoStream', userData, req.filter);
+  const fps = await getFps(pathToInput);
+
+  return await createGifFromVideo({ pathToInput, pathToOutput, filter, fps })
     .then((command) => {
       command.on('end', () => {
-        res.status(201).send('success');
+        res.status(201).send({ framerate: fps });
       });
       command.on('error', (error) => {
-        console.log('error', error);
         next(error);
       });
     })
     .catch((error) => {
-      console.error(error);
       next(error);
     });
 };
@@ -127,12 +152,10 @@ const handleSingleFile = (req, res, next) => {
         res.status(201).send('success');
       });
       command.on('error', (error) => {
-        console.log('error', error);
         next(error);
       });
     })
     .catch((error) => {
-      console.error(error);
       next(error);
     });
 };

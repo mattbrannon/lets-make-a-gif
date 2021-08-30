@@ -47,7 +47,7 @@ exports.imageUpload = imageUpload;
 const videoStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     const userId = req.userId;
-    const filepath = path.join(__dirname, `../../media/${userId}/videos`);
+    const filepath = path.join(__dirname, `../../media/${userId}/original`);
     cb(null, filepath);
   },
   filename: function (req, file, cb) {

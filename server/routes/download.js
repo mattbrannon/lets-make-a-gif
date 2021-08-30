@@ -6,11 +6,6 @@ module.exports = (app) => {
   router.get('/', (req, res) => {
     try {
       const userId = req.headers.cookie.split('=')[1];
-      // const isSingleFile = fs.readdirSync(path.join(__dirname, `../../media/${userId}/images`)).length === 1;
-
-      // const folder = isSingleFile
-      //   ? path.join(__dirname, `../../media/${userId}/copies`)
-      //   : path.join(__dirname, `../../media/${userId}/output`);
       const folder = path.join(__dirname, `../../media/${userId}/output`);
       const file = fs.readdirSync(folder)[0];
 

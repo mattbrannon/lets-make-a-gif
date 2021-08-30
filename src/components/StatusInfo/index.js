@@ -1,10 +1,13 @@
 import styled from 'styled-components/macro';
+import LoadingSpinner from '../LoadingSpinner';
 import MaxWidthWrapper from '../MaxWidthWrapper';
 
 export default function StatusInfo({ ...data }) {
   return (
     <StatusWrapper>
-      {data.error ? (
+      {data.status.isUploading ? (
+        <LoadingSpinner />
+      ) : data.error ? (
         <ErrorMessage>{data.error}</ErrorMessage>
       ) : data.status.isUpdating ? (
         <UpdateMessage>{data.update}</UpdateMessage>
@@ -27,6 +30,7 @@ const StatusWrapper = styled(MaxWidthWrapper)`
   width: 100%;
   display: grid;
   place-items: center;
+  align-self: start;
 `;
 
 const ErrorMessage = styled.code`

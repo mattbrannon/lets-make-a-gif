@@ -44,8 +44,8 @@ const MainText = styled.h1`
   animation: ${shift} 3000ms infinite;
   font-size: 2.5rem;
   white-space: nowrap;
-  @media (max-width: 280px) {
-    font-size: 1rem;
+  @media (max-width: 480px) {
+    font-size: 1.25rem;
     white-space: revert;
   }
   /* font-size: clamp(1rem, 2vw + 1rem, 3rem); */
@@ -111,8 +111,8 @@ export const Wrapper = styled.header`
   height: var(--headerHeight);
   position: relative;
   grid-row: 1;
-  @media (max-width: 240px) {
-    --headerHeight: 50px;
+  @media (max-width: 480px) {
+    --headerHeight: 40px;
   }
 `;
 

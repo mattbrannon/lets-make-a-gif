@@ -1,16 +1,19 @@
-const { cleanUp, removeImages, removeVideos, removeOutput } = require('./cleanup');
+const { cleanUp } = require('./cleanup');
 const { getFramerate, setFramerate } = require('./framerate');
 const { videoUpload, imageUpload } = require('./multer');
-const { handleCookies } = require('./cookies');
+const { resetFilter } = require('./reset');
+const { resizeInitialUpload } = require('./resize');
+const { ensureDirectories, localVariables } = require('./filesystem');
 
 module.exports = {
   cleanUp,
-  removeImages,
-  removeVideos,
-  removeOutput,
   getFramerate,
   setFramerate,
-  handleCookies,
+  resetFilter,
+  resizeInitialUpload,
   videoUpload,
   imageUpload,
+
+  ensureDirectories,
+  localVariables,
 };

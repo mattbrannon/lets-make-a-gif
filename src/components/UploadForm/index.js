@@ -1,58 +1,32 @@
-import { useEffect } from 'react';
+import { forwardRef } from 'react';
 import styled from 'styled-components/macro';
 
-export default function UploadForm({ kind, handleFileUpload }) {
-  useEffect(() => {});
-
-  const handleUpload = (e) => {
-    if (e.target.files.length) {
-      handleFileUpload(e);
-    }
-  };
-
+// eslint-disable-next-line react/display-name
+export const HiddenForm = forwardRef((props, ref) => {
+  const { handleFileUpload, kind } = props;
+  const multiple = kind === 'image';
+  const accept = kind === 'image' ? '.png,.jpeg,.jpg' : 'video/*,.mkv';
   return (
-    <FormWrapper onSubmit={(e) => e.preventDefault()}>
-      <Filepicker kind={kind} onChange={handleUpload} />
-      <Label tabIndex={0}>Upload files</Label>
-    </FormWrapper>
+    <VisuallyHidden>
+      <form onSubmit={(e) => e.preventDefault()} action="/upload" method="post" encType="multipart/form-data">
+        <input
+          ref={ref}
+          onChange={handleFileUpload}
+          type="file"
+          name="file"
+          id="fileUpload"
+          multiple={multiple}
+          accept={accept}
+        />
+      </form>
+    </VisuallyHidden>
   );
-}
+});
 
-const FormWrapper = styled.form.attrs({
-  action: '/upload',
-  method: 'post',
-  encType: 'multipart/form-data',
-})`
-  text-align: left;
-  /* margin: 16px auto 0 auto; */
-  /* grid-column: 2;
-  grid-row: 1; */
-  /* align-self: end; */
-`;
-
-const Filepicker = styled.input.attrs((p) => {
-  return {
-    type: 'file',
-    name: 'file',
-    id: 'fileUpload',
-    multiple: p.kind === 'image',
-    accept: p.kind === 'image' ? 'image/*' : 'video/*',
-  };
-})`
+const VisuallyHidden = styled.div`
+  visibility: hidden;
+  display: none;
   width: 0;
   height: 0;
-  visibility: hidden;
-`;
-
-const Label = styled.label.attrs({
-  htmlFor: 'fileUpload',
-})`
-  font-size: 1rem;
-  color: deeppink;
-  font-weight: 700;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  &:hover {
-    color: hsl(328, 100%, 35%);
-    cursor: pointer;
-  }
+  margin: -1;
 `;

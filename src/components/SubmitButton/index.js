@@ -2,7 +2,6 @@ import styled from 'styled-components/macro';
 import MaxWidthWrapper from '../MaxWidthWrapper';
 
 export default function SubmitButton({ children, ...props }) {
-  // console.log({ props });
   const {
     status: { isUpdating, isUploading },
   } = props;

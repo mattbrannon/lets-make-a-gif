@@ -1,9 +1,15 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components/macro';
 
 export default function Toggle({ ...props }) {
   const [ isChecked, setIsChecked ] = useState(false);
   const ref = useRef(null);
+
+  useEffect(() => {
+    if (props.reset) {
+      setIsChecked(false);
+    }
+  }, [ props.reset ]);
 
   const handleKeyDown = (e) => {
     const codes = [ 13, 32 ];

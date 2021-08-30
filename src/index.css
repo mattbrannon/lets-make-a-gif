@@ -8,7 +8,8 @@
 
 :root {
   --headerHeight: 70px;
-  --mainHeight: calc(100vh - var(--headerHeight));
+  --footerHeight: 44px;
+  --mainHeight: calc(100vh - var(--headerHeight) - var(--footerHeight));
 
   --pageWidth: 60ch;
   --unit: 0.5rem;

@@ -1,56 +1,53 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import styled from 'styled-components/macro';
 import FiltersPanel from '../Filters';
-import UploadForm from '../UploadForm';
+import { HiddenForm } from '../UploadForm';
 import DownloadButton from '../Download';
-import ContentArea from '../ContentArea';
+import UploadButton from '../UploadButton';
+import { Preview } from '../Preview';
 import { useFilters } from '../../hooks/useFilters';
-import { useWindowSize } from '../../hooks/useWindowSize';
 import StatusInfo from '../StatusInfo';
+import { useElementSize } from '../../hooks/useElementSize';
 
 export default function Main({ kind }) {
-  const size = useWindowSize();
   const filter = useFilters();
+  const formRef = useRef(null);
+  const imageRef = useRef(null);
+  const imageSize = useElementSize(imageRef);
 
   const [ filename, setFilename ] = useState('');
   const [ source, setSource ] = useState('');
-  const [ backup, setBackup ] = useState('');
   const [ update, setUpdate ] = useState('');
   const [ error, setError ] = useState('');
-  const [ frames, setFrames ] = useState(0);
+  const [ framerate, setFramerate ] = useState(0);
   const [ path, setPath ] = useState('');
   const [ isOpen, setIsOpen ] = useState(false);
+  // const [ dimensions, setDimensions ] = useState({ width: 0, height: 0 });
 
   const [ percentComplete, setPercentComplete ] = useState(0);
-  const [ status, setStatus ] = useState({ isUpdating: false, isError: false, isUploading: false });
-  const [ showStatus, setShowStatus ] = useState(false);
+  const [ status, setStatus ] = useState({ isUpdating: false, isError: false, isUploading: false, isReset: false });
+  // const [ showStatus, setShowStatus ] = useState(false);
 
   const [ data, setData ] = useState({
-    size,
     filename,
     source,
-    backup,
     status,
     percentComplete,
     update,
     error,
-    frames,
+    framerate,
     isOpen,
     setIsOpen,
   });
 
   useEffect(() => {
-    const { isError, isUploading, isUpdating } = status;
-    const shouldShowStatus = [ isError, isUploading, isUpdating ].some((item) => item);
-    setShowStatus(shouldShowStatus);
-    // console.log({ isError, isUploading, isUpdating });
-  }, [ status ]);
+    console.log({ filter: filter.filterString });
+  }, [ filter ]);
 
   useEffect(() => {
-    setData({ source, backup, size, filename, percentComplete, status, frames, error, update, isOpen });
-    // console.log({ source, size, filename, percentComplete, status, frames, error, update });
-  }, [ source, backup, size, filename, percentComplete, status, frames, path, isOpen ]);
+    setData({ source, filename, percentComplete, status, framerate, error, update, isOpen });
+  }, [ source, filename, percentComplete, status, framerate, path, isOpen ]);
 
   const handleError = (error) => {
     setStatus({ ...status, isError: true });
@@ -58,64 +55,64 @@ export default function Main({ kind }) {
   };
 
   const handleUpdate = (update) => {
-    setStatus({ ...status, isUpdating: true });
+    setStatus({ ...status, isUpdating: true, isReset: false });
     setUpdate(update);
   };
 
   const handleSuccess = (source) => {
     const prop = source ? 'isUpdating' : 'isUploading';
-    setStatus({ ...status, [prop]: false, isError: false });
+    setStatus({ ...status, [prop]: false, isError: false, isReset: false });
     setError('');
     setUpdate('');
     setSource(source);
-    setBackup(source);
   };
 
-  const handleFileUpload = (e) => {
-    const files = e.target.files;
+  const updateRoute = (kind, files) => {
     let path;
     if (kind === 'image') {
       if (files.length === 1) {
         path = '/api/upload/image';
-        setPath(path);
-        // console.log({ path });
       }
       else {
         path = '/api/upload/images';
-        setPath(path);
-        // console.log({ path });
       }
     }
     if (kind === 'video') {
       path = '/api/upload/videos';
-      setPath(path);
-      // console.log({ path });
     }
+    setPath(path);
+    return path;
+  };
 
-    if (files.length <= 300) {
-      setFrames(files.length);
+  const handleFileUpload = (e) => {
+    const files = e.target.files;
+    const path = updateRoute(kind, files);
 
+    if (files.length && files.length <= 300) {
       const filename = files.length === 1 && kind === 'image' ? files[0].name : formatFilename(files[0].name);
-      const { filters } = filter;
-      // const framerate = filters.framerate;
+
+      setFramerate(files.length);
       setFilename(filename);
       setSource('');
-      // if (framerate <= 1) {
-      //   filter.setFramerate(getFramerate(files.length));
-      // }
-      // filter.setFramerate(getFramerate(files.length));
+
+      const { filters } = filter;
+      filters.framerate = 0;
+
       const formData = new FormData();
       for (let file of files) {
         formData.append('file', file);
       }
-      formData.append('path', JSON.stringify(path));
+      formData.append('path', path);
       formData.append('filters', JSON.stringify(filters));
       formData.append('filterString', filter.filterString);
+      formData.append('framerate', files.length);
       setStatus({ ...status, isUploading: true, isError: false });
 
-      // console.log({ path });
-
       upload(path, formData, setPercentComplete)
+        .then(({ framerate }) => {
+          filter.setFramerate(framerate);
+          setFramerate(framerate);
+        })
         .then(downloadVideo)
         .then(handleSuccess)
         .catch(handleError);
@@ -125,11 +122,31 @@ export default function Main({ kind }) {
     }
   };
 
+  const resetFilters = () => {
+    const { filters, filterString } = filter;
+    handleUpdate('Resetting filters...');
+    const formData = new FormData();
+    formData.append('path', path);
+
+    formData.append('kind', JSON.stringify(kind));
+    formData.append('filters', JSON.stringify(filters));
+    formData.append('filterString', filterString);
+    axios
+      .post('/api/upload/reset', { framerate, filters, filterString, path })
+      .then(downloadVideo)
+      .then(handleSuccess)
+      .catch(handleError);
+  };
+
   const applyFilters = () => {
     const { filters, filterString } = filter;
     handleUpdate('Applying filters...');
+    const formData = new FormData();
+    formData.append('kind', kind);
+    formData.append('filters', filters);
+    formData.append('filterString', filterString);
     axios
-      .post('/api/upload/filters', { filters, filterString, path })
+      .post('/api/upload/filters', { filterString, path, filters })
       .then(downloadVideo)
       .then(handleSuccess)
       .catch(handleError);
@@ -137,18 +154,24 @@ export default function Main({ kind }) {
 
   return (
     <>
-      <MainGrid>
-        <Preview {...data} />
+      <MainGrid {...data}>
+        <Preview imageSize={imageSize} ref={imageRef} {...data} />
         <ButtonGroup>
-          <UploadForm kind={kind} handleFileUpload={handleFileUpload} />
-          {source && <DownloadButton {...data} />}
+          <UploadButton kind={kind} {...data} onClick={() => formRef.current.click()} />
+          <DownloadButton {...data} />
         </ButtonGroup>
-
+        <StatusInfo {...data} />
+        <HiddenForm ref={formRef} handleFileUpload={handleFileUpload} kind={kind} />
         <FiltersPanel
-          size={size}
+          applyFilters={applyFilters}
+          resetFilters={resetFilters}
+          setStatus={setStatus}
+          status={status}
           setIsOpen={setIsOpen}
-          frames={frames}
-          data={{ ...data, filter, applyFilters }}
+          isOpen={isOpen}
+          imageSize={imageSize}
+          framerate={framerate}
+          filter={filter}
         />
       </MainGrid>
     </>
@@ -157,75 +180,29 @@ export default function Main({ kind }) {
 
 const ButtonGroup = styled.div`
   display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  grid-column: 1 / -1;
+  align-self: start;
   flex-wrap: wrap;
-  margin: clamp(8px, 0.25vw + 0.5rem, 32px);
-  /* gap: clamp(16px, 0.25vw + 0.25rem, 32px); */
-  /* gap: 48px; */
-  padding: 16px;
-  grid-column: 2;
-  grid-row: 1;
-  justify-self: center;
-  align-self: end;
-
-  align-items: flex-end;
-  /* justify-content: center; */
-
-  transform: translate(0px, 64px);
-  @media (min-width: 420px) {
-    width: 50vw;
-
-    transform: translate(0px, -32px);
-    align-items: center;
+  flex: 1;
+  /* flex-direction: column; */
+  max-width: 600px;
+  margin: 0 auto;
+  /* height: 100%; */
+  @media (max-width: 320px) {
+    flex-direction: column;
+    height: 100%;
+    max-width: 200px;
+    justify-content: space-around;
   }
 `;
 
-{
-  /* <UploadForm kind={kind} handleFileUpload={handleFileUpload} />
-<ContentArea {...data} /> */
-}
-// {showStatus ? <StatusInfo {...data} /> : <DownloadButton {...data} />}
-
-// const MainGrid = styled.div`
-//   display: grid;
-//   /* grid-template-columns: 1fr minmax(min(320px, 100%), 1fr) 1fr; */
-//   /* grid-template-rows: 40px minmax(280px, 1fr) 40px max-content; */
-
-//   grid-template-columns: 20vw 60vw 20vw;
-//   grid-template-rows: 35vh 5vh auto;
-//   justify-content: center;
-//   height: 100%;
-// `;
-
 const MainGrid = styled.div`
   display: grid;
-  grid-template-areas:
-    'top top top'
-    'mid mid mid'
-    'bot bot bot';
-
   grid-template-columns: 20vw 60vw 20vw;
-  /* grid-template-rows: 25vh 5vh calc(50vh - var(--headerHeight)) 10vh; */
   justify-content: center;
-  height: inherit;
-`;
-
-const Preview = ({ ...data }) => {
-  return <Image size={data.size} src={data.source} />;
-};
-
-const Image = styled.img`
-  /* width: 100%;
-  height: auto; */
-  grid-column: 1 / -1;
-  grid-row: 1;
-  /* max-width: 240px; */
-  max-width: ${(p) => p.size.height / 1.7 + 'px'};
-  max-height: ${(p) => p.size.width / 2 + 'px'};
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  justify-self: center;
-  /* place-self: center; */
+  height: calc(100vh - var(--headerHeight) - var(--footerHeight));
 `;
 
 const removeFileExtension = (filename) => {
@@ -267,14 +244,14 @@ const downloadVideo = async () => {
   }
 };
 
-// const formatBytes = (bytes, decimals = 2) => {
-//   if (bytes === 0) return '0 Bytes';
+const formatBytes = (bytes, decimals = 2) => {
+  if (bytes === 0) return '0 Bytes';
 
-//   const k = 1024;
-//   const dm = decimals < 0 ? 0 : decimals;
-//   const sizes = [ 'Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' ];
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = [ 'Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' ];
 
-//   const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-//   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-// };
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+};

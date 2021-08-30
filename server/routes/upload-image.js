@@ -1,9 +1,11 @@
 module.exports = (app) => {
   const router = require('express').Router();
-  const { cleanUp, imageUpload, handleCookies } = require('../middleware');
+  const { imageUpload, cleanUp } = require('../middleware');
+  const { setInputOutput } = require('../middleware/filepath');
+
   const { handleSingleFile } = require('../../api');
 
-  router.post('/', handleCookies, cleanUp, imageUpload.single('file'), (req, res, next) => {
+  router.post('/', cleanUp, imageUpload.single('file'), setInputOutput, (req, res, next) => {
     handleSingleFile(req, res, next);
   });
 

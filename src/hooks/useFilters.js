@@ -40,7 +40,7 @@ const initialFilters = {
   },
   cartoon: {
     active: false,
-    value: 'frei0r=cartoon:0.95',
+    value: 'frei0r=cartoon:0.99',
   },
   greyscale: {
     active: false,
@@ -55,12 +55,13 @@ const initialFilters = {
   vflip: false,
   reverse: false,
   random: false,
+  negate: false,
+  reset: false,
 };
 
-function toCartoonValue(n) {
-  // return Number((9 / 10 + n * 0.001).toFixed(3));
-  return n.toString().split('.').map((v, i) => i === 1 ? `9${v}` : v).join('.')
-}
+const cloneObject = (obj) => {
+  return JSON.parse(JSON.stringify(obj));
+};
 
 const buildArgs = (obj) => {
   return Object.entries(obj)
@@ -74,16 +75,23 @@ const buildArgs = (obj) => {
 
 const sanitizeInput = (value, min = 0, max = 1) => {
   const result = value < min ? min : value > max ? max : value;
-  return Math.abs(result) || min;
+  return result;
 };
 
 export const useFilters = () => {
-  const [ filters, setFilters ] = useState(initialFilters);
+  const [ filters, setFilters ] = useState(cloneObject(initialFilters));
   const [ filterString, setFilterString ] = useState('');
   const previous = usePrevious(filters);
   const [ data, setData ] = useState([]);
 
   useEffect(() => {
+    const resetFilters = () => {
+      const framerate = filters.framerate;
+      initialFilters.framerate = framerate;
+      setFilters(cloneObject(initialFilters));
+      setData([]);
+      setFilterString('');
+    };
     const updateFilters = () => {
       for (const key in filters) {
         if (filters[key] !== previous[key] && key !== 'framerate') {
@@ -99,6 +107,10 @@ export const useFilters = () => {
             }
           }
           else if (typeof filters[key] === 'boolean') {
+            if (key === 'reset' && filters[key] === true) {
+              resetFilters();
+            }
+
             handleBooleanFilterChanges(filters, key);
           }
         }
@@ -106,10 +118,13 @@ export const useFilters = () => {
       setFilterString(data.join(','));
     };
 
-    if (filters && previous) {
+    if (filters && previous && !filters.reset) {
       updateFilters();
     }
-  }, [ filters, previous, filters.framerate ]);
+    else if (filters.reset) {
+      resetFilters();
+    }
+  }, [ filters, previous, filters.framerate, filters.reset ]);
 
   const handleComplexFilterChanges = (curr, prev, key) => {
     if (hasNumber(curr[key]) && key !== 'frei0r') {
@@ -197,21 +212,28 @@ export const useFilters = () => {
     setFilters({ ...filters, [e.target.name]: { ...name, active: e.target.checked } });
   };
 
+  // const toggleOff = (e) => {
+  //   setFilters({ ...filters, [e.target.name]: false });
+  // };
+
+  // const specialOff = (e) => {
+  //   const name = { ...filters[e.target.name] };
+  //   setFilters({ ...filters, [e.target.name]: { ...name, active: false } });
+  // };
+
   const handleNumbers = (e) => {
     return sanitizeInput(Number(e.target.value), e.target.min, e.target.max);
   };
 
   const adjustHue = (e) => {
-    // const value = Number(e.target.value);
-    const value = handleNumbers(e);
-    const key = e.target.name.charAt(0);
     const { hue } = filters;
-    setFilters({ ...filters, hue: { ...hue, [key]: value } });
+    const value = handleNumbers(e);
+    const name = e.target.name.charAt(0);
+    setFilters({ ...filters, hue: { ...hue, [name]: value } });
   };
 
   const adjustEq = (e) => {
     const { eq } = filters;
-    // const value = Number(e.target.value);
     const value = handleNumbers(e);
     const name = e.target.name;
     setFilters({ ...filters, eq: { ...eq, [name]: value } });
@@ -219,12 +241,9 @@ export const useFilters = () => {
 
   const adjustFrei0r = (e) => {
     const { frei0r } = filters;
-    // let value = Number(e.target.value);
+    const name = e.target.name;
     let value = handleNumbers(e);
-    if (e.target.name === 'cartoon') {
-      value = value === 0 ? value : toCartoonValue(e.target.value);
-    }
-    setFilters({ ...filters, frei0r: { ...frei0r, [e.target.name]: Number(value) } });
+    setFilters({ ...filters, frei0r: { ...frei0r, [name]: Number(value) } });
   };
 
   const adjustTmix = (e) => {
@@ -252,6 +271,12 @@ export const useFilters = () => {
     setFilters({ ...filters, framerate: n });
   };
 
+  const handleReset = () => {
+    setFilters({ ...filters, reset: true });
+    setData([]);
+    setFilterString('');
+  };
+
   return {
     filters,
     handleToggle,
@@ -262,6 +287,7 @@ export const useFilters = () => {
     adjustFramerate,
     setFramerate,
     adjustTmix,
+    handleReset,
     filterString,
   };
 };

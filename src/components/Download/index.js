@@ -1,10 +1,12 @@
 import styled from 'styled-components/macro';
 
 export default function Download({ ...data }) {
+  console.log({ data });
+  const ext = data.framerate ? '.gif' : data.ext.toLowerCase();
   if (data.source) {
     return (
-      <DownloadButton href={data.source} download={data.filename}>
-        Download {data.filename.split('.').slice(-1)}
+      <DownloadButton href={data.source} download={data.filename + ext}>
+        Download {ext.slice(1)}
       </DownloadButton>
     );
   }

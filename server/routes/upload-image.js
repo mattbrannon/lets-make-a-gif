@@ -5,8 +5,8 @@ module.exports = (app) => {
 
   const { handleSingleFile } = require('../../api');
 
-  router.post('/', cleanUp, imageUpload.single('file'), setInputOutput, (req, res, next) => {
-    handleSingleFile(req, res, next);
+  router.post('/', cleanUp, imageUpload.single('file'), setInputOutput, async (req, res, next) => {
+    await handleSingleFile(req, res, next);
   });
 
   app.use('/api/upload/image', router);

@@ -1,5 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
+// const multer = require('multer');
+// const upload = multer();
 
 const ensureDirectories = async (req, res, next) => {
   const userId = res.locals.userId;
@@ -26,6 +28,7 @@ const localVariables = (req, res, next) => {
     original: res.locals[userId].original,
     output: res.locals[userId].output,
   };
+  req.userData = res.app.locals[userId];
   next();
 };
 

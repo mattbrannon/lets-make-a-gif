@@ -21,7 +21,8 @@ export default function Main({ kind }) {
   const [ update, setUpdate ] = useState('');
   const [ error, setError ] = useState('');
   const [ framerate, setFramerate ] = useState(0);
-  const [ path, setPath ] = useState('');
+  const [ route, setRoute ] = useState('');
+  const [ ext, setExtension ] = useState('');
   const [ isOpen, setIsOpen ] = useState(false);
   // const [ dimensions, setDimensions ] = useState({ width: 0, height: 0 });
 
@@ -31,6 +32,7 @@ export default function Main({ kind }) {
 
   const [ data, setData ] = useState({
     filename,
+    ext,
     source,
     status,
     percentComplete,
@@ -47,7 +49,7 @@ export default function Main({ kind }) {
 
   useEffect(() => {
     setData({ source, filename, percentComplete, status, framerate, error, update, isOpen });
-  }, [ source, filename, percentComplete, status, framerate, path, isOpen ]);
+  }, [ source, filename, percentComplete, status, framerate, route, isOpen ]);
 
   const handleError = (error) => {
     setStatus({ ...status, isError: true });
@@ -68,31 +70,35 @@ export default function Main({ kind }) {
   };
 
   const updateRoute = (kind, files) => {
-    let path;
+    let route;
     if (kind === 'image') {
       if (files.length === 1) {
-        path = '/api/upload/image';
+        route = '/api/upload/image';
       }
       else {
-        path = '/api/upload/images';
+        route = '/api/upload/images';
       }
     }
     if (kind === 'video') {
-      path = '/api/upload/videos';
+      route = '/api/upload/videos';
     }
-    setPath(path);
-    return path;
+    setRoute(route);
+    return route;
   };
 
   const handleFileUpload = (e) => {
     const files = e.target.files;
-    const path = updateRoute(kind, files);
 
     if (files.length && files.length <= 300) {
-      const filename = files.length === 1 && kind === 'image' ? files[0].name : formatFilename(files[0].name);
-
+      const firstFile = files[0].name;
+      const ext = firstFile.slice(firstFile.lastIndexOf('.'));
+      const filename = firstFile.slice(0, firstFile.lastIndexOf('.'));
+      const route = updateRoute(kind, files);
+      // const filename = files.length === 1 && kind === 'image' ? files[0].name : formatFilename(files[0].name);
+      console.log(filename);
       setFramerate(files.length);
       setFilename(filename);
+      setExtension(ext);
       setSource('');
 
       const { filters } = filter;
@@ -102,13 +108,14 @@ export default function Main({ kind }) {
       for (let file of files) {
         formData.append('file', file);
       }
-      formData.append('path', path);
-      formData.append('filters', JSON.stringify(filters));
+      formData.append('ext', ext);
+      formData.append('route', route);
+      formData.append('filename', filename);
       formData.append('filterString', filter.filterString);
       formData.append('framerate', files.length);
       setStatus({ ...status, isUploading: true, isError: false });
 
-      upload(path, formData, setPercentComplete)
+      upload(route, formData, setPercentComplete)
         .then(({ framerate }) => {
           filter.setFramerate(framerate);
           setFramerate(framerate);
@@ -123,16 +130,10 @@ export default function Main({ kind }) {
   };
 
   const resetFilters = () => {
-    const { filters, filterString } = filter;
+    const { filterString } = filter;
     handleUpdate('Resetting filters...');
-    const formData = new FormData();
-    formData.append('path', path);
-
-    formData.append('kind', JSON.stringify(kind));
-    formData.append('filters', JSON.stringify(filters));
-    formData.append('filterString', filterString);
     axios
-      .post('/api/upload/reset', { framerate, filters, filterString, path })
+      .post('/api/upload/reset', { filename, ext, framerate, filterString, route })
       .then(downloadVideo)
       .then(handleSuccess)
       .catch(handleError);
@@ -141,12 +142,8 @@ export default function Main({ kind }) {
   const applyFilters = () => {
     const { filters, filterString } = filter;
     handleUpdate('Applying filters...');
-    const formData = new FormData();
-    formData.append('kind', kind);
-    formData.append('filters', filters);
-    formData.append('filterString', filterString);
     axios
-      .post('/api/upload/filters', { filterString, path, filters })
+      .post('/api/upload/filters', { filename, ext, framerate, filterString, route })
       .then(downloadVideo)
       .then(handleSuccess)
       .catch(handleError);
@@ -221,10 +218,10 @@ const handleProgressEvent = (progressEvent, setPercentComplete) => {
   setPercentComplete(percentComplete);
 };
 
-const upload = async (path, data, callback) => {
+const upload = async (route, data, callback) => {
   try {
-    const route = path.charAt(0) === '/' ? path : `/${path}`;
-    const response = await axios.post(route, data, {
+    const url = route.charAt(0) === '/' ? route : `/${route}`;
+    const response = await axios.post(url, data, {
       onUploadProgress: callback ? (e) => handleProgressEvent(e, callback) : null,
     });
     return await response.data;

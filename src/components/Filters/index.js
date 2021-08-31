@@ -3,7 +3,7 @@ import Toggle from '../Toggle';
 import { useEffect, useState } from 'react';
 
 export default function FiltersPanel(props) {
-  const { applyFilters, resetFilters, filter, imageSize, setIsOpen, framerate, isOpen, status, setStatus } = props;
+  const { applyFilters, resetFilters, filter, imageSize, setIsOpen, frames, isOpen, status, setStatus } = props;
   const {
     filters,
     handleSpecial,
@@ -19,8 +19,8 @@ export default function FiltersPanel(props) {
   const hue = filters.hue.h; //|| 0;
   const brightness = filters.hue.b; //|| 0;
   const saturation = filters.hue.s;
-  const tmix = filters.tmix.framerate; //|| 0;
-  const maxTmix = Math.min(framerate, 24);
+  const tmix = filters.tmix.frames; //|| 0;
+  const maxTmix = Math.min(frames, 24);
   const fps = filters.framerate;
   const gamma = filters.eq.gamma;
   const contrast = filters.eq.contrast;

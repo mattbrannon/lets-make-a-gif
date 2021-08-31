@@ -1,24 +1,18 @@
 const ffmpeg = require('fluent-ffmpeg');
-const fs = require('fs-extra');
-const path = require('path');
+// const fs = require('fs-extra');
+// const path = require('path');
 
 const resizeInitialUpload = (req, res, next) => {
   const userId = res.locals.userId;
-  const userData = req.app.locals[userId];
-  // const pathToOriginal = userData.pathToOriginal;
-  const nameOfFile = fs.readdirSync(userData.original)[0];
-
-  const pathToOriginal = path.resolve(userData.original, nameOfFile);
-  // fs.readdirSync(userData.original)[0]
-  const pathToVideos = path.resolve(userData.videos, nameOfFile);
+  const userData = res.locals[userId];
 
   console.log({ userData });
 
-  const command = ffmpeg(pathToOriginal)
+  const command = ffmpeg(userData.pathToOriginal)
     .inputOptions([ '-y' ])
     .complexFilter('scale=w=480:h=-1')
     .outputOptions([ '-an' ])
-    .save(pathToVideos);
+    .save(userData.pathToInput);
 
   command.on('end', () => {
     next();

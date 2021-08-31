@@ -21,21 +21,20 @@ export default function Main({ kind }) {
   const [ update, setUpdate ] = useState('');
   const [ error, setError ] = useState('');
   const [ framerate, setFramerate ] = useState(0);
+  const [ frames, setFrames ] = useState(0);
+  const [ filesize, setFilesize ] = useState('');
   const [ route, setRoute ] = useState('');
   const [ ext, setExtension ] = useState('');
   const [ isOpen, setIsOpen ] = useState(false);
-  // const [ dimensions, setDimensions ] = useState({ width: 0, height: 0 });
-
   const [ percentComplete, setPercentComplete ] = useState(0);
   const [ status, setStatus ] = useState({ isUpdating: false, isError: false, isUploading: false, isReset: false });
-  // const [ showStatus, setShowStatus ] = useState(false);
-
   const [ data, setData ] = useState({
     filename,
     ext,
     source,
     status,
     percentComplete,
+    filesize,
     update,
     error,
     framerate,
@@ -48,8 +47,8 @@ export default function Main({ kind }) {
   }, [ filter ]);
 
   useEffect(() => {
-    setData({ source, filename, percentComplete, status, framerate, error, update, isOpen });
-  }, [ source, filename, percentComplete, status, framerate, route, isOpen ]);
+    setData({ source, filename, percentComplete, filesize, status, framerate, error, update, isOpen, ext });
+  }, [ source, filename, percentComplete, status, framerate, route, isOpen, ext, filesize ]);
 
   const handleError = (error) => {
     setStatus({ ...status, isError: true });
@@ -88,44 +87,52 @@ export default function Main({ kind }) {
 
   const handleFileUpload = (e) => {
     const files = e.target.files;
+    if (files.length) {
+      const size = [ ...files ].reduce((acc, file) => acc + file.size, 0);
+      const filesize = formatBytes(size);
+      setFilesize(filesize);
+      if (size < 31_000_000) {
+        console.log({ size, filesize });
+        const firstFile = files[0].name;
+        const ext = firstFile.slice(firstFile.lastIndexOf('.')).toLowerCase();
+        const filename = firstFile.slice(0, firstFile.lastIndexOf('.'));
+        const route = updateRoute(kind, files);
+        // const filename = files.length === 1 && kind === 'image' ? files[0].name : formatFilename(files[0].name);
+        const framerate = getFramerate(files.length);
 
-    if (files.length && files.length <= 300) {
-      const firstFile = files[0].name;
-      const ext = firstFile.slice(firstFile.lastIndexOf('.'));
-      const filename = firstFile.slice(0, firstFile.lastIndexOf('.'));
-      const route = updateRoute(kind, files);
-      // const filename = files.length === 1 && kind === 'image' ? files[0].name : formatFilename(files[0].name);
-      console.log(filename);
-      setFramerate(files.length);
-      setFilename(filename);
-      setExtension(ext);
-      setSource('');
+        setFramerate(framerate);
+        setFrames(files.length);
+        setFilename(filename);
+        setExtension(ext);
 
-      const { filters } = filter;
-      filters.framerate = 0;
+        setSource('');
 
-      const formData = new FormData();
-      for (let file of files) {
-        formData.append('file', file);
+        // const { filters } = filter;
+        // filters.framerate = 0;
+
+        const formData = new FormData();
+        for (let file of files) {
+          formData.append('file', file);
+        }
+        formData.append('ext', ext);
+        formData.append('route', route);
+        formData.append('filename', filename);
+        formData.append('filterString', filter.filterString);
+        formData.append('framerate', framerate);
+        setStatus({ ...status, isUploading: true, isError: false });
+
+        upload(route, formData, setPercentComplete)
+          .then(({ framerate }) => {
+            filter.setFramerate(framerate);
+            setFramerate(framerate);
+          })
+          .then(downloadVideo)
+          .then(handleSuccess)
+          .catch(handleError);
       }
-      formData.append('ext', ext);
-      formData.append('route', route);
-      formData.append('filename', filename);
-      formData.append('filterString', filter.filterString);
-      formData.append('framerate', files.length);
-      setStatus({ ...status, isUploading: true, isError: false });
-
-      upload(route, formData, setPercentComplete)
-        .then(({ framerate }) => {
-          filter.setFramerate(framerate);
-          setFramerate(framerate);
-        })
-        .then(downloadVideo)
-        .then(handleSuccess)
-        .catch(handleError);
-    }
-    else {
-      handleError('Please select 300 or fewer files');
+      else {
+        handleError(`Combined size of files: ${filesize}\nPlease limit total files to less than 30mb`);
+      }
     }
   };
 
@@ -140,7 +147,7 @@ export default function Main({ kind }) {
   };
 
   const applyFilters = () => {
-    const { filters, filterString } = filter;
+    const { filterString } = filter;
     handleUpdate('Applying filters...');
     axios
       .post('/api/upload/filters', { filename, ext, framerate, filterString, route })
@@ -167,7 +174,8 @@ export default function Main({ kind }) {
           setIsOpen={setIsOpen}
           isOpen={isOpen}
           imageSize={imageSize}
-          framerate={framerate}
+          setFramerate={setFramerate}
+          frames={frames}
           filter={filter}
         />
       </MainGrid>
@@ -202,16 +210,16 @@ const MainGrid = styled.div`
   height: calc(100vh - var(--headerHeight) - var(--footerHeight));
 `;
 
-const removeFileExtension = (filename) => {
-  return filename
-    .split('.')
-    .slice(0, -1)
-    .join('-');
-};
+// const removeFileExtension = (filename) => {
+//   return filename
+//     .split('.')
+//     .slice(0, -1)
+//     .join('-');
+// };
 
-const formatFilename = (filename, ext = 'gif') => {
-  return removeFileExtension(filename) + `.${ext}`;
-};
+// const formatFilename = (filename, ext = 'gif') => {
+//   return removeFileExtension(filename) + `.${ext}`;
+// };
 
 const handleProgressEvent = (progressEvent, setPercentComplete) => {
   const percentComplete = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -244,11 +252,22 @@ const downloadVideo = async () => {
 const formatBytes = (bytes, decimals = 2) => {
   if (bytes === 0) return '0 Bytes';
 
-  const k = 1024;
+  const k = 1000;
   const dm = decimals < 0 ? 0 : decimals;
   const sizes = [ 'Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' ];
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+};
+
+const getFramerate = (n) => {
+  n = Number(n);
+  while (n > 30) {
+    n = n / 2;
+  }
+  while (n <= 10) {
+    n = n * 2;
+  }
+  return Math.round(n);
 };

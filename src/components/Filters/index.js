@@ -20,7 +20,7 @@ export default function FiltersPanel(props) {
   const brightness = filters.hue.b; //|| 0;
   const saturation = filters.hue.s;
   const tmix = filters.tmix.frames; //|| 0;
-  const maxTmix = Math.min(frames, 24);
+  // const maxTmix = Math.min(frames, 24);
   const fps = filters.framerate;
   const gamma = filters.eq.gamma;
   const contrast = filters.eq.contrast;
@@ -53,7 +53,7 @@ export default function FiltersPanel(props) {
         <Cell min="1" max="120" step="1.0" value={fps} name="framerate" onChange={adjustFramerate} />
         <Cell min="-10" max="10" step="0.1" name="contrast" value={contrast} onChange={adjustEq} />
         <Cell min="0" max="10" step="0.1" name="gamma" value={gamma} onChange={adjustEq} />
-        <Cell id="tmix" min="0" max={maxTmix} name="tmix" value={tmix} onChange={adjustTmix} />
+        <Cell id="tmix" min="0" max={frames} name="tmix" value={tmix} onChange={adjustTmix} />
         <Cell id="rgbnoise" min="0.0" max="1.0" step="0.01" name="rgbnoise" value={noise} onChange={adjustFrei0r} />
         <Cell id="vertigo" min="0.0" max="1.0" step="0.01" name="vertigo" value={vertigo} onChange={adjustFrei0r} />
         <Cell reset={reset} checked={filters.cartoon.active} handleToggle={handleSpecial} name="cartoon" />

@@ -12,11 +12,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cookieSetter);
 app.use(ensureDirectories);
-// app.use(localVariables);
 
 app.use(express.static(path.join(__dirname, '../build')));
-
-// require('./routes/test')(app);
 
 require('./routes/upload-images')(app);
 require('./routes/upload-image')(app);

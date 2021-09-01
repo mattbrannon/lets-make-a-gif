@@ -30,10 +30,8 @@ const imageFileFilter = (req, file, cb) => {
 const imageLimits = {
   fieldNameSize: 100,
   fieldSize: 1024,
-  fileSize: 1.5e7,
-  files: 900,
-  // parts: 2000,
-  // headerPairs: 100,
+  fileSize: 4.5e6,
+  files: 301,
 };
 
 const imageUpload = multer({
@@ -69,10 +67,7 @@ const videoFileFilter = (req, file, cb) => {
 };
 
 const videoLimits = {
-  // fieldNameSize: 100,
-  // fieldSize: 1024,
-  // fields: 1,
-  fileSize: 1.5e7,
+  fileSize: 3.1e7,
   files: 1,
   parts: 10,
   headerPairs: 100,

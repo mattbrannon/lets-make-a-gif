@@ -20,6 +20,13 @@ require('./routes/upload-videos')(app);
 require('./routes/upload-filters')(app);
 require('./routes/reset-filters')(app);
 require('./routes/download')(app);
+require('./routes/404')(app);
 require('./routes/default')(app);
 
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+if (process.env.NODE_ENV !== 'production') {
+  console.log('app running in development mode');
+  app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+}
+else {
+  app.listen(PORT);
+}

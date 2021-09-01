@@ -2,6 +2,7 @@ import { Router } from '@reach/router';
 import HomePage from '../Home';
 import Header from '../Header';
 import Main from './Main';
+import NotFoundPage from '../404';
 
 const App = () => {
   return (
@@ -11,6 +12,7 @@ const App = () => {
         <HomePage path="/" />
         <Main kind="image" path="image" />
         <Main kind="video" path="video" />
+        <NotFoundPage default />
       </Router>
     </>
   );

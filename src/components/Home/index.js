@@ -7,12 +7,12 @@ export default function HomePage() {
     <Wrapper>
       <Paragraph>I want to...</Paragraph>
       <Choices>
-        <Link to="video">
+        <PaddedLink to="video">
           <Choice name="videoPage">Convert a video</Choice>
-        </Link>
-        <Link to="image">
+        </PaddedLink>
+        <PaddedLink to="image">
           <Choice name="imagePage">Convert images</Choice>
-        </Link>
+        </PaddedLink>
       </Choices>
     </Wrapper>
   );
@@ -55,4 +55,8 @@ const Paragraph = styled.p`
   text-align: center;
   margin-top: -128px;
   margin-bottom: 64px;
+`;
+
+const PaddedLink = styled(Link)`
+  margin: 24px;
 `;

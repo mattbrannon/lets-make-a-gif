@@ -87,7 +87,7 @@ export default function Main({ kind }) {
       const size = [ ...files ].reduce((acc, file) => acc + file.size, 0);
       const filesize = formatBytes(size);
       setFilesize(filesize);
-      if (size < 31_000_000) {
+      if (size < 3.1e7) {
         const firstFile = files[0].name;
         const ext = firstFile.slice(firstFile.lastIndexOf('.')).toLowerCase();
         const filename = firstFile.slice(0, firstFile.lastIndexOf('.'));

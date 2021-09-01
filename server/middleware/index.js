@@ -1,19 +1,20 @@
 const { cleanUp } = require('./cleanup');
-const { getFramerate, setFramerate } = require('./framerate');
 const { videoUpload, imageUpload } = require('./multer');
 const { resetFilter } = require('./reset');
-const { resizeInitialUpload } = require('./resize');
-const { ensureDirectories, localVariables } = require('./filesystem');
+const { resizeVideo, resizeImages } = require('./resize');
+const { ensureDirectories } = require('./ensureDirs');
+const { cookieSetter } = require('./cookies');
+const { setInputOutput } = require('./inputOutput');
 
 module.exports = {
   cleanUp,
-  getFramerate,
-  setFramerate,
   resetFilter,
-  resizeInitialUpload,
+  resizeVideo,
+  resizeImages,
+  cookieSetter,
+  setInputOutput,
   videoUpload,
   imageUpload,
 
   ensureDirectories,
-  localVariables,
 };

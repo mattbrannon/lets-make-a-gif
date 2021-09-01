@@ -3,7 +3,18 @@ import Toggle from '../Toggle';
 import { useEffect, useState } from 'react';
 
 export default function FiltersPanel(props) {
-  const { applyFilters, resetFilters, filter, imageSize, setIsOpen, frames, isOpen, status, setStatus } = props;
+  const {
+    applyFilters,
+    resetFilters,
+    filter,
+    imageSize,
+    setIsOpen,
+    frames,
+    isOpen,
+    status,
+    setStatus,
+    setFramerate,
+  } = props;
   const {
     filters,
     handleSpecial,
@@ -16,17 +27,15 @@ export default function FiltersPanel(props) {
     handleReset,
   } = filter;
 
-  const hue = filters.hue.h; //|| 0;
-  const brightness = filters.hue.b; //|| 0;
+  const hue = filters.hue.h;
+  const brightness = filters.hue.b;
   const saturation = filters.hue.s;
-  const tmix = filters.tmix.frames; //|| 0;
-  // const maxTmix = Math.min(frames, 24);
-  const fps = filters.framerate;
+  const tmix = filters.tmix.frames;
+  const framerate = filters.framerate;
   const gamma = filters.eq.gamma;
   const contrast = filters.eq.contrast;
   const noise = filters.frei0r.rgbnoise;
   const vertigo = filters.frei0r.vertigo;
-  // const cartoon = filters.frei0r.cartoon;
 
   const [ height, setHeight ] = useState(0);
   const [ reset, setReset ] = useState(false);
@@ -36,6 +45,10 @@ export default function FiltersPanel(props) {
       setHeight(imageSize.height);
     }
   }, [ imageSize ]);
+
+  useEffect(() => {
+    setFramerate(framerate);
+  }, [ framerate ]);
 
   useEffect(() => {
     if (reset) {
@@ -50,7 +63,7 @@ export default function FiltersPanel(props) {
         <Cell min="-1" max="360" value={keepHueInRange(hue)} name="hue" step="1.0" onChange={adjustHue} />
         <Cell min="-10" max="10" step="0.1" name="saturation" value={saturation} onChange={adjustHue} />
         <Cell min="-10" max="10" step="0.1" name="brightness" value={brightness} onChange={adjustHue} />
-        <Cell min="1" max="120" step="1.0" value={fps} name="framerate" onChange={adjustFramerate} />
+        <Cell min="1" max="120" step="1.0" value={framerate} name="framerate" onChange={adjustFramerate} />
         <Cell min="-10" max="10" step="0.1" name="contrast" value={contrast} onChange={adjustEq} />
         <Cell min="0" max="10" step="0.1" name="gamma" value={gamma} onChange={adjustEq} />
         <Cell id="tmix" min="0" max={frames} name="tmix" value={tmix} onChange={adjustTmix} />
@@ -277,17 +290,6 @@ function UpdateButton({ ...props }) {
     </UpdateFiltersWrapper>
   );
 }
-
-// const UpdateButton = forwardRef((props, ref) => {
-//   const disabled = props.isUpdating;
-//   return (
-//     <UpdateFiltersWrapper ref={ref} disabled={disabled} onClick={props.applyFilters} {...props}>
-//       <span>Apply Filters</span>
-//     </UpdateFiltersWrapper>
-//   );
-// });
-
-// UpdateButton.displayName = UpdateButton;
 
 function ResetButton({ ...props }) {
   const handleReset = () => {

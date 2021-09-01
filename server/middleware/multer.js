@@ -7,7 +7,7 @@ const getNumber = increment();
 const imageStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     const userId = req.userId;
-    const filepath = path.join(__dirname, `../../media/${userId}/images`);
+    const filepath = path.join(__dirname, `../../media/${userId}/original`);
     cb(null, filepath);
   },
   filename: function (req, file, cb) {
@@ -30,8 +30,8 @@ const imageFileFilter = (req, file, cb) => {
 const imageLimits = {
   fieldNameSize: 100,
   fieldSize: 1024,
-  fileSize: 2.5e8,
-  files: 300,
+  fileSize: 1.5e7,
+  files: 900,
   // parts: 2000,
   // headerPairs: 100,
 };
@@ -72,7 +72,7 @@ const videoLimits = {
   // fieldNameSize: 100,
   // fieldSize: 1024,
   // fields: 1,
-  fileSize: 2.5e8,
+  fileSize: 1.5e7,
   files: 1,
   parts: 10,
   headerPairs: 100,

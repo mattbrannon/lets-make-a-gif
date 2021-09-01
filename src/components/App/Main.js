@@ -43,10 +43,6 @@ export default function Main({ kind }) {
   });
 
   useEffect(() => {
-    console.log({ filter: filter.filterString });
-  }, [ filter ]);
-
-  useEffect(() => {
     setData({ source, filename, percentComplete, filesize, status, framerate, error, update, isOpen, ext });
   }, [ source, filename, percentComplete, status, framerate, route, isOpen, ext, filesize ]);
 
@@ -92,7 +88,6 @@ export default function Main({ kind }) {
       const filesize = formatBytes(size);
       setFilesize(filesize);
       if (size < 31_000_000) {
-        console.log({ size, filesize });
         const firstFile = files[0].name;
         const ext = firstFile.slice(firstFile.lastIndexOf('.')).toLowerCase();
         const filename = firstFile.slice(0, firstFile.lastIndexOf('.'));
@@ -106,9 +101,6 @@ export default function Main({ kind }) {
         setExtension(ext);
 
         setSource('');
-
-        // const { filters } = filter;
-        // filters.framerate = 0;
 
         const formData = new FormData();
         for (let file of files) {
@@ -177,6 +169,7 @@ export default function Main({ kind }) {
           setFramerate={setFramerate}
           frames={frames}
           filter={filter}
+          framerate={framerate}
         />
       </MainGrid>
     </>

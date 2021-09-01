@@ -4,7 +4,7 @@ export function usePrevious(value) {
   const ref = useRef();
   useEffect(() => {
     ref.current = value;
-  }, [ value ]); // Only re-run if value changes
+  }, [ value ]);
   // Return previous value (happens before update in useEffect above)
   return ref.current;
 }

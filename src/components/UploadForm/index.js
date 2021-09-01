@@ -1,7 +1,6 @@
 import { forwardRef } from 'react';
 import styled from 'styled-components/macro';
 
-// eslint-disable-next-line react/display-name
 export const HiddenForm = forwardRef((props, ref) => {
   const { handleFileUpload, kind } = props;
   const multiple = kind === 'image';
@@ -22,6 +21,8 @@ export const HiddenForm = forwardRef((props, ref) => {
     </VisuallyHidden>
   );
 });
+
+HiddenForm.displayName = 'HiddenForm';
 
 const VisuallyHidden = styled.div`
   visibility: hidden;

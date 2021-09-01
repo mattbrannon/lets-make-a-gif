@@ -1,7 +1,5 @@
 const path = require('path');
 const fs = require('fs-extra');
-// const multer = require('multer');
-// const upload = multer();
 
 const ensureDirectories = async (req, res, next) => {
   const userId = res.locals.userId;
@@ -20,19 +18,4 @@ const ensureDirectories = async (req, res, next) => {
   next();
 };
 
-const localVariables = (req, res, next) => {
-  const userId = res.locals.userId;
-  res.app.locals[userId] = {
-    videos: res.locals[userId].videos,
-    images: res.locals[userId].images,
-    original: res.locals[userId].original,
-    output: res.locals[userId].output,
-  };
-  req.userData = res.app.locals[userId];
-  next();
-};
-
-module.exports = {
-  ensureDirectories,
-  localVariables,
-};
+exports.ensureDirectories = ensureDirectories;

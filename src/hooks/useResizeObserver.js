@@ -1,13 +1,4 @@
-import { forwardRef, useEffect, useReducer, useCallback, useState } from 'react';
-
-// export const useResizeObserver = () => {
-//   const [ size, setSize ] = useState(null);
-//   const ref = useCallback((node) => {
-//     if (node !== null) {
-//       setSize(node.getBoundingClientRect());
-//     }
-//     return [ size, ref ];
-//   }, []);
+import { useCallback, useState } from 'react';
 
 export const useResizeObserver = () => {
   const [ size, setSize ] = useState({ width: 0, height: 0 });

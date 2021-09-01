@@ -1,7 +1,6 @@
 import styled from 'styled-components/macro';
 
 export default function Download({ ...data }) {
-  console.log({ data });
   const ext = data.framerate ? '.gif' : data.ext.toLowerCase();
   if (data.source) {
     return (

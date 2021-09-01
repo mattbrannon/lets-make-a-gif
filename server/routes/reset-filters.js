@@ -1,8 +1,7 @@
 module.exports = (app) => {
   const router = require('express').Router();
   const { handleImageStream, handleVideoStream, handleSingleFile } = require('../../api');
-  const { resetFilter } = require('../middleware');
-  const { setInputOutput } = require('../middleware/filepath');
+  const { resetFilter, setInputOutput } = require('../middleware');
 
   router.post('/', resetFilter, setInputOutput, (req, res, next) => {
     if (req.body.route === '/api/upload/videos') {

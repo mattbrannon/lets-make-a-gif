@@ -6,7 +6,7 @@ export default function StatusInfo({ ...data }) {
   return (
     <StatusWrapper>
       {data.status.isUploading ? (
-        <LoadingSpinner />
+        <LoadingSpinner {...data} />
       ) : data.error ? (
         <ErrorMessage>{data.error}</ErrorMessage>
       ) : data.status.isUpdating ? (

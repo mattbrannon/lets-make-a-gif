@@ -212,15 +212,6 @@ export const useFilters = () => {
     setFilters({ ...filters, [e.target.name]: { ...name, active: e.target.checked } });
   };
 
-  // const toggleOff = (e) => {
-  //   setFilters({ ...filters, [e.target.name]: false });
-  // };
-
-  // const specialOff = (e) => {
-  //   const name = { ...filters[e.target.name] };
-  //   setFilters({ ...filters, [e.target.name]: { ...name, active: false } });
-  // };
-
   const handleNumbers = (e) => {
     return sanitizeInput(Number(e.target.value), e.target.min, e.target.max);
   };
@@ -248,7 +239,6 @@ export const useFilters = () => {
 
   const adjustTmix = (e) => {
     const { tmix } = filters;
-    // const value = Number(e.target.value);
     const value = handleNumbers(e);
     if (value === 0) {
       const prev = tmix.frames;

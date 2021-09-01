@@ -1,9 +1,10 @@
 module.exports = (app) => {
   const router = require('express').Router();
-  const { cleanUp, imageUpload, setFramerate, handleCookies } = require('../middleware');
+  const { imageUpload, cleanUp, setInputOutput, resizeImages } = require('../middleware');
+
   const { handleImageStream } = require('../../api');
 
-  router.post('/', handleCookies, cleanUp, imageUpload.array('file'), setFramerate, (req, res, next) => {
+  router.post('/', cleanUp, imageUpload.array('file'), setInputOutput, resizeImages, (req, res, next) => {
     handleImageStream(req, res, next);
   });
 

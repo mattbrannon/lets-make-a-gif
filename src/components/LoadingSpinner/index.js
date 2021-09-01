@@ -1,7 +1,7 @@
 import styled from 'styled-components/macro';
 import { keyframes } from 'styled-components';
 
-export default function LoadingSpinner({ percentComplete }) {
+export default function LoadingSpinner({ percentComplete, filesize }) {
   return (
     <Wrapper>
       {percentComplete < 100 ? (
@@ -9,6 +9,7 @@ export default function LoadingSpinner({ percentComplete }) {
       ) : (
         <>
           <Spinner />
+          <Message>Total size of upload: {filesize}</Message>
           <Message>Converting to gif...</Message>
         </>
       )}

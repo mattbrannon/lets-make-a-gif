@@ -1,9 +1,9 @@
 module.exports = (app) => {
   const router = require('express').Router();
-  const { cleanUp, videoUpload, handleCookies } = require('../middleware');
+  const { videoUpload, resizeVideo, cleanUp, setInputOutput } = require('../middleware');
   const { handleVideoStream } = require('../../api');
 
-  router.post('/', handleCookies, cleanUp, videoUpload.single('file'), (req, res, next) => {
+  router.post('/', cleanUp, videoUpload.single('file'), setInputOutput, resizeVideo, (req, res, next) => {
     handleVideoStream(req, res, next);
   });
 

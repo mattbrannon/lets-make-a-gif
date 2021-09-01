@@ -1,9 +1,15 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components/macro';
 
 export default function Toggle({ ...props }) {
   const [ isChecked, setIsChecked ] = useState(false);
   const ref = useRef(null);
+
+  useEffect(() => {
+    if (props.reset) {
+      setIsChecked(false);
+    }
+  }, [ props.reset ]);
 
   const handleKeyDown = (e) => {
     const codes = [ 13, 32 ];
@@ -56,14 +62,7 @@ const Wrapper = styled.div`
 
   border: none;
   margin: 8px 0;
-  /* background: transparent; */
 `;
-
-// const FlexWrapper = styled.div`
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-// `;
 
 const Content = styled.span`
   position: relative;
@@ -120,7 +119,6 @@ const ToggleLabel = styled.label`
   &:active {
     ${Content} {
       transform: var(--toggleActiveContentTransform);
-      // font-size: calc(var(--fontSize) * 0.94);
     }
   }
 

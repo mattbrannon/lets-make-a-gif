@@ -50,6 +50,7 @@
     ]
   },
   "devDependencies": {
+    "@react-hook/resize-observer": "^1.2.2",
     "concurrently": "^6.2.1",
     "cors": "^2.8.5",
     "eslint": "^7.32.0",

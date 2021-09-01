@@ -1,29 +1,24 @@
 import styled from 'styled-components/macro';
+import { forwardRef } from 'react';
+import { useWindowSize } from '../../hooks/useWindowSize';
 
-export default function Preview({ ...data }) {
-  const Component = data.source || data.backup ? Image : null;
-  return (
-    <Wrapper size={data.size}>
-      <Component {...data} />
-    </Wrapper>
-  );
-}
+export const Preview = forwardRef(({ source }, imageRef) => {
+  const { height } = useWindowSize();
+  return <Image ref={imageRef} src={source} height={height} />;
+});
 
-const Wrapper = styled.div`
-  place-self: center;
-  max-width: ${(p) => (p.size.width > 320 ? 320 + 'px' : p.size.width + 'px')};
-  max-height: 240px;
-  height: 100%;
+const Image = styled.img`
+  grid-column: 1 / -1;
+  grid-row: 1;
+  max-width: 512px;
+  max-height: ${(p) => p.height / 2.5}px;
   width: 100%;
-  grid-column: 2;
-`;
-
-function Image({ size, source, backup }) {
-  return <PreviewImage size={size} src={source || backup} />;
-}
-
-const PreviewImage = styled.img`
-  width: 100%;
-  height: 100%;
+  height: auto;
+  /* height: ${(p) => (p.src ? 'auto' : 0)}; */
   object-fit: contain;
+  justify-self: center;
+  /* border-bottom: 3px solid red; */
+  /* box-shadow: 0 0 0 2px black; */
 `;
+
+Preview.displayName = 'Preview';

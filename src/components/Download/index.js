@@ -1,37 +1,33 @@
 import styled from 'styled-components/macro';
 
 export default function Download({ ...data }) {
+  const ext = data.framerate ? '.gif' : data.ext.toLowerCase();
   if (data.source) {
     return (
-      <DownloadButtonWrapper>
-        <DownloadButton href={data.source} download={data.filename}>
-          Download {data.filename.split('.').slice(-1)}
-        </DownloadButton>
-      </DownloadButtonWrapper>
+      <DownloadButton href={data.source} download={data.filename + ext}>
+        Download {ext.slice(1)}
+      </DownloadButton>
     );
   }
   return null;
 }
 
-const DownloadButtonWrapper = styled.div`
-  padding: 4px;
-  border-radius: 8px;
-  max-width: 160px;
-  margin: 0 auto;
-  grid-column: 2;
-  grid-row: 3;
-`;
-
 const DownloadButton = styled.a`
   font-weight: 800;
-  color: blue;
-  margin-bottom: 16px;
-  margin-top: 16px;
-  width: 100%;
-  display: grid;
-  place-items: center;
+  padding: 12px 18px;
+  background: blue;
+  color: white;
+  font-weight: 800;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  text-align: center;
 
   &:hover {
-    color: darkblue;
+    background: darkblue;
+  }
+  &:active {
+    background: midnightblue;
   }
 `;

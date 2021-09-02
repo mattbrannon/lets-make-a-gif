@@ -1,5 +1,5 @@
 import { Router } from '@reach/router';
-import HomePage from '../Home';
+// import HomePage from '../Home';
 import Header from '../Header';
 import Main from './Main';
 import NotFoundPage from '../404';
@@ -9,9 +9,7 @@ const App = () => {
     <>
       <Header>Let's Make a Gif</Header>
       <Router style={{ height: 'calc(100vh - var(--headerHeight))' }}>
-        <HomePage path="/" />
-        <Main kind="image" path="image" />
-        <Main kind="video" path="video" />
+        <Main path="/" />
         <NotFoundPage default />
       </Router>
     </>

@@ -10,11 +10,12 @@ import { useFilters } from '../../hooks/useFilters';
 import StatusInfo from '../StatusInfo';
 import { useElementSize } from '../../hooks/useElementSize';
 
-export default function Main({ kind }) {
+export default function Main() {
   const filter = useFilters();
   const formRef = useRef(null);
   const imageRef = useRef(null);
   const imageSize = useElementSize(imageRef);
+  const [ kind, setKind ] = useState('');
 
   const [ filename, setFilename ] = useState('');
   const [ source, setSource ] = useState('');
@@ -47,6 +48,7 @@ export default function Main({ kind }) {
   }, [ source, filename, percentComplete, status, framerate, route, isOpen, ext, filesize ]);
 
   const handleError = (error) => {
+    // console.log({ isFucked: true, error });
     setStatus({ ...status, isError: true });
     setError(error);
   };
@@ -62,6 +64,17 @@ export default function Main({ kind }) {
     setError('');
     setUpdate('');
     setSource(source);
+  };
+
+  const handleFramerate = ({ framerate }) => {
+    // console.log({ framerate });
+    // if (!framerate) {
+    //   setError('An error occurred');
+    //   setStatus({ ...status, isError: true });
+    //   throw new Error('Its all fucked johnny!');
+    // }
+    filter.setFramerate(framerate);
+    setFramerate(framerate);
   };
 
   const updateRoute = (kind, files) => {
@@ -87,43 +100,50 @@ export default function Main({ kind }) {
       const size = [ ...files ].reduce((acc, file) => acc + file.size, 0);
       const filesize = formatBytes(size);
       setFilesize(filesize);
-      if (size < 3.1e7) {
-        const firstFile = files[0].name;
-        const ext = firstFile.slice(firstFile.lastIndexOf('.')).toLowerCase();
-        const filename = firstFile.slice(0, firstFile.lastIndexOf('.'));
-        const route = updateRoute(kind, files);
-        // const filename = files.length === 1 && kind === 'image' ? files[0].name : formatFilename(files[0].name);
-        const framerate = getFramerate(files.length);
 
-        setFramerate(framerate);
-        setFrames(files.length);
-        setFilename(filename);
-        setExtension(ext);
+      if (size < 1.5e7) {
+        if (files.length <= 450) {
+          // if (size < 10.5e7) {
+          const firstFile = files[0].name;
+          const ext = firstFile.slice(firstFile.lastIndexOf('.')).toLowerCase();
+          const filename = firstFile.slice(0, firstFile.lastIndexOf('.'));
+          const route = updateRoute(kind, files);
+          // const filename = files.length === 1 && kind === 'image' ? files[0].name : formatFilename(files[0].name);
+          const framerate = getFramerate(files.length);
 
-        setSource('');
+          setFramerate(framerate);
+          setFrames(files.length);
+          setFilename(filename);
+          setExtension(ext);
 
-        const formData = new FormData();
-        for (let file of files) {
-          formData.append('file', file);
+          setSource('');
+
+          const formData = new FormData();
+          for (let file of files) {
+            formData.append('file', file);
+          }
+          formData.append('ext', ext);
+          formData.append('route', route);
+          formData.append('filename', filename);
+          formData.append('filterString', filter.filterString);
+          formData.append('framerate', framerate);
+          setStatus({ ...status, isUploading: true, isError: false });
+
+          uploadFiles(route, formData, setPercentComplete)
+            .then(handleFramerate)
+            .then(downloadVideo)
+            .then(handleSuccess)
+            .catch(handleError);
         }
-        formData.append('ext', ext);
-        formData.append('route', route);
-        formData.append('filename', filename);
-        formData.append('filterString', filter.filterString);
-        formData.append('framerate', framerate);
-        setStatus({ ...status, isUploading: true, isError: false });
-
-        upload(route, formData, setPercentComplete)
-          .then(({ framerate }) => {
-            filter.setFramerate(framerate);
-            setFramerate(framerate);
-          })
-          .then(downloadVideo)
-          .then(handleSuccess)
-          .catch(handleError);
+        else {
+          handleError('Please limit the number of files to 450 or less');
+        }
       }
       else {
-        handleError(`Combined size of files: ${filesize}\nPlease limit total files to less than 30mb`);
+        handleError(`
+        Combined size of files: ${filesize}
+        Please limit total files to less than 15mb
+        `);
       }
     }
   };
@@ -147,14 +167,20 @@ export default function Main({ kind }) {
       .then(handleSuccess)
       .catch(handleError);
   };
+  const handleButtonClick = async (e) => {
+    // console.log(e.target.name);
+    await setKind(e.target.name);
+    await formRef.current.click();
+  };
 
   return (
     <>
       <MainGrid {...data}>
         <Preview imageSize={imageSize} ref={imageRef} {...data} />
         <ButtonGroup>
-          <UploadButton kind={kind} {...data} onClick={() => formRef.current.click()} />
+          <UploadButton name="image" {...data} onClick={handleButtonClick} />
           <DownloadButton {...data} />
+          <UploadButton name="video" {...data} onClick={handleButtonClick} />
         </ButtonGroup>
         <StatusInfo {...data} />
         <HiddenForm ref={formRef} handleFileUpload={handleFileUpload} kind={kind} />
@@ -219,7 +245,7 @@ const handleProgressEvent = (progressEvent, setPercentComplete) => {
   setPercentComplete(percentComplete);
 };
 
-const upload = async (route, data, callback) => {
+const uploadFiles = async (route, data, callback) => {
   try {
     const url = route.charAt(0) === '/' ? route : `/${route}`;
     const response = await axios.post(url, data, {
@@ -235,10 +261,10 @@ const downloadVideo = async () => {
   try {
     const response = await fetch('/api/download');
     const blob = await response.blob();
-    const objectUrl = await URL.createObjectURL(blob);
+    const objectUrl = URL.createObjectURL(blob);
     return objectUrl;
   } catch (error) {
-    console.error(error);
+    throw new Error(error.message);
   }
 };
 

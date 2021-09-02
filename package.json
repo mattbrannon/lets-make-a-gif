@@ -25,10 +25,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server:dev": "NODE_ENV=production nodemon server/index.js",
+    "server:dev": "nodemon server/index.js",
     "dev": "concurrently -k \"yarn server:dev\" \"yarn start\"",
     "server": "node server/index.js",
-    "prod": "yarn build && NODE_ENV=production node server/index.js",
+    "prod": "yarn build && NODE_ENV=production pm2 restart updated",
     "deploy": "pm2 deploy ecosystem.config.js production"
   },
   "eslintConfig": {

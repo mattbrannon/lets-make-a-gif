@@ -35,5 +35,6 @@ const DownloadButton = styled.a`
     padding: 8px;
     font-size: 0.8rem;
     width: fit-content;
+    margin-top: 16px;
   }
 `;

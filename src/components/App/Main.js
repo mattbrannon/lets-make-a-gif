@@ -220,7 +220,7 @@ const ButtonGroup = styled.div`
     max-width: 200px;
     justify-content: space-around;
     align-items: center;
-    gap: 16px;
+    /* gap: 16px; */
   }
 `;
 

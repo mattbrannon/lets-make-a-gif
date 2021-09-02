@@ -26,6 +26,7 @@ const UploadButtonWrapper = styled.button`
     background: #555;
   }
   @media (max-width: 480px) {
+    margin-top: 16px;
     padding: 8px;
     font-size: 0.8rem;
     width: fit-content;

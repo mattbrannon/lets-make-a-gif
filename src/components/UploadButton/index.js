@@ -25,4 +25,9 @@ const UploadButtonWrapper = styled.button`
   &:active {
     background: #555;
   }
+  @media (max-width: 480px) {
+    padding: 8px;
+    font-size: 0.8rem;
+    width: fit-content;
+  }
 `;

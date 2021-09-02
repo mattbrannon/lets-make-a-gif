@@ -219,6 +219,8 @@ const ButtonGroup = styled.div`
     height: 100%;
     max-width: 200px;
     justify-content: space-around;
+    align-items: center;
+    gap: 16px;
   }
 `;
 

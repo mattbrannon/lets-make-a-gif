@@ -30,4 +30,10 @@ const DownloadButton = styled.a`
   &:active {
     background: midnightblue;
   }
+
+  @media (max-width: 480px) {
+    padding: 8px;
+    font-size: 0.8rem;
+    width: fit-content;
+  }
 `;

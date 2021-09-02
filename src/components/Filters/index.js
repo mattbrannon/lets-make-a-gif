@@ -1,6 +1,7 @@
 import styled from 'styled-components/macro';
 import Toggle from '../Toggle';
 import { useEffect, useState } from 'react';
+import { useWindowSize } from '../../hooks/useWindowSize';
 
 export default function FiltersPanel(props) {
   const {
@@ -283,9 +284,18 @@ const ShowHideButtonWrapper = styled(Button)`
 `;
 
 function UpdateButton({ ...props }) {
+  const size = useWindowSize();
   const disabled = props.isUpdating;
+
+  const handleButtonClick = () => {
+    props.applyFilters();
+    if (size.width <= 480) {
+      props.setIsOpen(false);
+    }
+  };
+
   return (
-    <UpdateFiltersWrapper disabled={disabled} onClick={props.applyFilters} {...props}>
+    <UpdateFiltersWrapper disabled={disabled} onClick={handleButtonClick} {...props}>
       <span>Apply Filters</span>
     </UpdateFiltersWrapper>
   );

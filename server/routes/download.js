@@ -7,17 +7,13 @@ module.exports = (app) => {
     try {
       const userId = req.headers.cookie.split('=')[1];
       const userData = res.locals[userId];
-      console.log(userData);
-      const folder = path.join(__dirname, `../../media/${userId}/output`);
-      const file = fs.readdirSync(folder)[0];
 
-      const ext = file.split('.').slice(-1);
-      const filename = file.split('.').slice(0, -1);
+      const file = fs.readdirSync(userData.output)[0];
+      const filepath = path.resolve(userData.output, file);
 
-      const filepath = `${folder}/${filename}.${ext}`;
       fs.createReadStream(filepath).pipe(res);
     } catch (error) {
-      res.send(error.message);
+      res.send(error);
     }
   });
 

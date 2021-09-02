@@ -19,8 +19,10 @@ const getFps = (file) => {
   });
 };
 
-const createGifFromImages = async ({ pathToInput, pathToOutput, filterString, framerate }) => {
+const createGifFromImages = async ({ pathToInput, pathToOutput, filterString, framerate, usePalette }) => {
+  console.log({ usePalette });
   const args = [ 'split [a][b]; [a] palettegen [p]; [b][p] paletteuse' ];
+  if (!usePalette) args.pop();
   if (filterString) {
     args.unshift(filterString);
   }
@@ -29,15 +31,21 @@ const createGifFromImages = async ({ pathToInput, pathToOutput, filterString, fr
   //   ? '[0:v] ' + filterString + ',split [a][b]; [a] palettegen [P]; [b][P] paletteuse'
   //   : '[0:v] split [a][b]; [a] palettegen [P]; [b][P] paletteuse';
 
+  if (filter) {
+    return ffmpeg(pathToInput)
+      .inputOptions([ '-y', '-f image2', `-framerate ${framerate}`, '-pattern_type glob' ])
+      .complexFilter(filter)
+      .outputOptions([ '-f gif' ])
+      .save(pathToOutput);
+  }
   return ffmpeg(pathToInput)
     .inputOptions([ '-y', '-f image2', `-framerate ${framerate}`, '-pattern_type glob' ])
-    .complexFilter(filter)
     .outputOptions([ '-f gif' ])
     .save(pathToOutput);
 };
 
 const createGifFromVideo = async ({ pathToInput, pathToOutput, filterString, framerate }) => {
-  const args = [ `fps=${Math.round(framerate / 1.2)},split [a][b];[a] palettegen [p];[b][p] paletteuse` ];
+  const args = [ `split [a][b];[a] palettegen [p];[b][p] paletteuse` ];
   if (filterString) {
     args.unshift(filterString);
   }
@@ -46,6 +54,7 @@ const createGifFromVideo = async ({ pathToInput, pathToOutput, filterString, fra
 
   return ffmpeg(pathToInput)
     .inputOptions([ '-y' ])
+    .inputFPS(framerate)
     .complexFilter(videoFilter)
     .outputOptions([ '-f gif' ])
     .save(pathToOutput);
@@ -54,7 +63,7 @@ const createGifFromVideo = async ({ pathToInput, pathToOutput, filterString, fra
 const handleImageStream = async (req, res, next) => {
   const userId = await res.locals.userId;
   const userData = await res.locals[userId];
-  const { pathToOutput, filterString, framerate } = await userData;
+  const { pathToOutput, filterString, framerate, usePalette } = await userData;
   const original = path.resolve(path.join(__dirname, `../media/${userId}/original`));
   const images = path.resolve(path.join(__dirname, `../media/${userId}/images`));
 
@@ -68,7 +77,7 @@ const handleImageStream = async (req, res, next) => {
     pathToInput = path.resolve(original, `*${userData.ext}`);
   }
 
-  return await createGifFromImages({ pathToInput, pathToOutput, filterString, framerate })
+  return await createGifFromImages({ pathToInput, pathToOutput, filterString, framerate, usePalette })
     .then((command) => {
       command.on('end', () => {
         res.status(201).send({ framerate });
@@ -85,8 +94,8 @@ const handleImageStream = async (req, res, next) => {
 const handleVideoStream = async (req, res, next) => {
   const userId = await res.locals.userId;
   const userData = await res.locals[userId];
-  const { pathToInput, pathToOutput, filterString } = await userData;
-  const framerate = await getFps(pathToInput);
+  const { pathToInput, pathToOutput, filterString, framerate } = await userData;
+  // const framerate = await getFps(pathToInput);
 
   return await createGifFromVideo({ pathToInput, pathToOutput, filterString, framerate })
     .then((command) => {

@@ -21,8 +21,9 @@ const setInputOutput = async (req, res, next) => {
   else if (req.baseUrl === '/api/upload/image' || route === '/api/upload/image') {
     // handle single image
     const originalFilename = req.body.filename + req.body.ext;
-    const file = await fs.readdir(userData.images).then((files) => files[0]);
-    const pathToInput = path.resolve(userData.images, file);
+    const file = await fs.readdir(userData.original).then((files) => files[0]);
+    const pathToInput = path.resolve(userData.original, file);
+
     const pathToOutput = path.resolve(userData.output, originalFilename);
     userData.pathToInput = pathToInput;
     userData.pathToOutput = pathToOutput;
@@ -43,7 +44,9 @@ const setInputOutput = async (req, res, next) => {
     userData.pathToOutput = pathToOutput;
     userData.pathToOriginal = pathToOriginal;
     userData.filterString = req.body.filterString;
+    userData.framerate = req.body.framerate;
   }
+  console.log({ userData });
   next();
 };
 

@@ -1,5 +1,5 @@
 const { cleanUp } = require('./cleanup');
-const { videoUpload, imageUpload } = require('./multer');
+const { uploadVideo, uploadImage, uploadImages, handleVideos, handleImages } = require('./multer');
 const { resetFilter } = require('./reset');
 const { resizeVideo, resizeImages } = require('./resize');
 const { ensureDirectories } = require('./ensureDirs');
@@ -13,8 +13,10 @@ module.exports = {
   resizeImages,
   cookieSetter,
   setInputOutput,
-  videoUpload,
-  imageUpload,
-
+  uploadVideo,
+  uploadImage,
+  uploadImages,
+  handleVideos,
+  handleImages,
   ensureDirectories,
 };

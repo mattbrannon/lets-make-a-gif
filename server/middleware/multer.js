@@ -30,8 +30,8 @@ const imageFileFilter = (req, file, cb) => {
 const imageLimits = {
   fieldNameSize: 100,
   fieldSize: 1024,
-  fileSize: 4.5e6,
-  files: 301,
+  // fileSize: 4.5e6,
+  // files: 301,
 };
 
 const imageUpload = multer({
@@ -39,8 +39,6 @@ const imageUpload = multer({
   fileFilter: imageFileFilter,
   limits: imageLimits,
 });
-
-exports.imageUpload = imageUpload;
 
 const videoStorage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -67,10 +65,10 @@ const videoFileFilter = (req, file, cb) => {
 };
 
 const videoLimits = {
-  fileSize: 3.1e7,
+  fileSize: 1.5e7,
   files: 1,
-  parts: 10,
-  headerPairs: 100,
+  // parts: 10,
+  // headerPairs: 100,
 };
 
 const videoUpload = multer({
@@ -79,4 +77,43 @@ const videoUpload = multer({
   limits: videoLimits,
 });
 
-exports.videoUpload = videoUpload;
+const uploadImages = imageUpload.array('file');
+const uploadVideo = videoUpload.single('file');
+// exports.videoUpload = videoUpload;
+// exports.uploadImages = imageUpload.array('file');
+// exports.uploadImage = imageUpload.single('file');
+
+const handleImages = (req, res, next) => {
+  uploadImages(req, res, function (error) {
+    if (error instanceof multer.MulterError) {
+      console.log({ multer: error.code });
+      const json = JSON.stringify({ message: error.message });
+      res.status(500).send(json);
+    }
+    else if (error) {
+      console.log({ error });
+    }
+    else {
+      console.log({ success: true });
+      next();
+    }
+  });
+};
+
+const handleVideos = (req, res, next) => {
+  uploadVideo(req, res, function (error) {
+    if (error) {
+      console.log({ file: __filename, error: error.message });
+      next(error);
+    }
+    next();
+  });
+};
+
+module.exports = {
+  uploadImage: imageUpload.single('file'),
+  uploadImages: imageUpload.array('file'),
+  uploadVideo: videoUpload.single('file'),
+  handleVideos,
+  handleImages,
+};

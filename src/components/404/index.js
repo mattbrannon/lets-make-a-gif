@@ -1,10 +1,15 @@
 import styled from 'styled-components/macro';
 import { Link } from '@reach/router';
+import wrongway from './wrongway.gif';
+import MaxWidthWrapper from '../MaxWidthWrapper';
 
 export default function NotFoundPage() {
   return (
     <Wrapper>
-      <code>Whoops, nothing here...</code>
+      <Message>Whoops! We must have taken a wrong turn at Albuquerque</Message>
+      <MaxWidthWrapper>
+        <img src={wrongway} height="auto" width="100%" />
+      </MaxWidthWrapper>
       <Link to="/">
         <Button>Back to safety</Button>
       </Link>
@@ -20,6 +25,10 @@ const Wrapper = styled.div`
   height: 100%;
   gap: 24px;
   margin-top: -48px;
+`;
+
+const Message = styled.code`
+  margin-bottom: 1rem;
 `;
 
 const Button = styled.button`

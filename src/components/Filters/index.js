@@ -66,7 +66,7 @@ export default function FiltersPanel(props) {
         <Cell min="1" max="120" step="1.0" value={framerate} name="framerate" onChange={adjustFramerate} />
         <Cell min="-10" max="10" step="0.1" name="contrast" value={contrast} onChange={adjustEq} />
         <Cell min="0" max="10" step="0.1" name="gamma" value={gamma} onChange={adjustEq} />
-        <Cell id="tmix" min="0" max={frames} name="tmix" value={tmix} onChange={adjustTmix} />
+        <Cell id="tmix" min="0" max={frames > 1 ? frames : 12} name="tmix" value={tmix} onChange={adjustTmix} />
         <Cell id="rgbnoise" min="0.0" max="1.0" step="0.01" name="rgbnoise" value={noise} onChange={adjustFrei0r} />
         <Cell id="vertigo" min="0.0" max="1.0" step="0.01" name="vertigo" value={vertigo} onChange={adjustFrei0r} />
         <Cell reset={reset} checked={filters.cartoon.active} handleToggle={handleSpecial} name="cartoon" />

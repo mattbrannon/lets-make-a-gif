@@ -14,11 +14,8 @@ const Image = styled.img`
   max-height: ${(p) => p.height / 2.5}px;
   width: 100%;
   height: auto;
-  /* height: ${(p) => (p.src ? 'auto' : 0)}; */
   object-fit: contain;
   justify-self: center;
-  /* border-bottom: 3px solid red; */
-  /* box-shadow: 0 0 0 2px black; */
 `;
 
 Preview.displayName = 'Preview';

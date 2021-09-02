@@ -9,7 +9,7 @@ const resizeVideo = (req, res, next) => {
 
   const command = ffmpeg(userData.pathToOriginal)
     .inputOptions([ '-y' ])
-    .complexFilter('scale=w=480:h=-1')
+    .complexFilter('scale=w=480:h=-2')
     .outputOptions([ '-an' ])
     .save(userData.pathToInput);
 
@@ -48,7 +48,7 @@ const areEqualSizes = async (folder) => {
 const resizeImages = async (req, res, next) => {
   const userId = await res.locals.userId;
   const userData = await res.locals[userId];
-  const { width, height, areEqual } = await areEqualSizes(userData.original);
+  const { width, areEqual } = await areEqualSizes(userData.original);
   userData.usePalette = areEqual;
   if (!areEqual || width > 480) {
     const files = await fs.readdir(userData.original);
@@ -56,7 +56,8 @@ const resizeImages = async (req, res, next) => {
       const filepath = path.resolve(userData.original, file);
       const outputPath = path.resolve(userData.images, file);
       ffmpeg(filepath)
-        .outputOptions('-vf scale=480:-1')
+        // .size('480x270')
+        .outputOptions('-vf scale=480:-2')
         .save(outputPath);
     }
     next();

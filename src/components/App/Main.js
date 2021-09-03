@@ -94,7 +94,7 @@ export default function Main() {
       const filesize = formatBytes(size);
       setFilesize(filesize);
 
-      if (size < 2.0e7) {
+      if (size < 3.0e7) {
         if (files.length <= 450) {
           const firstFile = files[0].name;
           const ext = firstFile.slice(firstFile.lastIndexOf('.')).toLowerCase();

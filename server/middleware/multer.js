@@ -65,7 +65,7 @@ const videoFileFilter = (req, file, cb) => {
 };
 
 const videoLimits = {
-  fileSize: 1.5e7,
+  fileSize: 2.0e7,
   files: 1,
   // parts: 10,
   // headerPairs: 100,

@@ -46,7 +46,7 @@ const setInputOutput = async (req, res, next) => {
     userData.filterString = req.body.filterString;
     userData.framerate = req.body.framerate;
   }
-  console.log({ userData });
+  // console.log({ userData });
   next();
 };
 

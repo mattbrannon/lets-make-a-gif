@@ -1,11 +1,11 @@
 module.exports = (app) => {
   const router = require('express').Router();
-  const { uploadImages, cleanUp, setInputOutput, resizeImages, handleVideos, handleImages } = require('../middleware');
-
+  const { cleanUp, setInputOutput, uploadImages } = require('../middleware');
+  const resizeImages = require('../middleware/resizeImages')(app);
   const { handleImageStream } = require('../../api');
 
-  router.post('/', cleanUp, handleImages, setInputOutput, resizeImages, (req, res, next) => {
-    handleImageStream(req, res, next);
+  router.post('/', cleanUp, uploadImages, setInputOutput, resizeImages, async (req, res, next) => {
+    await handleImageStream(req, res, next);
   });
 
   app.use('/api/upload/images', router);

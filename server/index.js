@@ -14,13 +14,14 @@ app.use(ensureDirectories);
 
 app.use(express.static(path.join(__dirname, '../build')));
 
+// app.use('/api/upload/images', resizeImages);
 require('./routes/upload-images')(app);
 require('./routes/upload-image')(app);
 require('./routes/upload-videos')(app);
 require('./routes/upload-filters')(app);
 require('./routes/reset-filters')(app);
 require('./routes/download')(app);
-require('./routes/404')(app);
+// require('./routes/404')(app);
 require('./routes/default')(app);
 
 if (process.env.NODE_ENV !== 'production') {

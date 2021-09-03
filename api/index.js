@@ -1,26 +1,9 @@
 const fs = require('fs-extra');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
-const ffprobe = ffmpeg.ffprobe;
-
-const getFps = (file) => {
-  return new Promise((resolve, reject) => {
-    ffprobe(file, (error, data) => {
-      if (error) reject(error);
-
-      const n = data.streams
-        .filter((obj) => obj.codec_type === 'video')
-        .map((obj) => obj.r_frame_rate)[0]
-        .split('/')
-        .map(Number)
-        .reduce((a, b) => Math.floor(Math.round(a / b) / 2));
-      resolve(n);
-    });
-  });
-};
 
 const createGifFromImages = async ({ pathToInput, pathToOutput, filterString, framerate, usePalette }) => {
-  console.log({ usePalette });
+  // console.log({ usePalette });
   const args = [ 'split [a][b]; [a] palettegen [p]; [b][p] paletteuse' ];
   if (!usePalette) args.pop();
   if (filterString) {
@@ -61,9 +44,11 @@ const createGifFromVideo = async ({ pathToInput, pathToOutput, filterString, fra
 };
 
 const handleImageStream = async (req, res, next) => {
+  // console.log(__filename, req.app.locals);
   const userId = await res.locals.userId;
   const userData = await res.locals[userId];
-  const { pathToOutput, filterString, framerate, usePalette } = await userData;
+  const { usePalette } = await req.app.locals;
+  const { pathToOutput, filterString, framerate } = await userData;
   const original = path.resolve(path.join(__dirname, `../media/${userId}/original`));
   const images = path.resolve(path.join(__dirname, `../media/${userId}/images`));
 
@@ -95,7 +80,6 @@ const handleVideoStream = async (req, res, next) => {
   const userId = await res.locals.userId;
   const userData = await res.locals[userId];
   const { pathToInput, pathToOutput, filterString, framerate } = await userData;
-  // const framerate = await getFps(pathToInput);
 
   return await createGifFromVideo({ pathToInput, pathToOutput, filterString, framerate })
     .then((command) => {

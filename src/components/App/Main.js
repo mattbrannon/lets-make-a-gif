@@ -48,7 +48,6 @@ export default function Main() {
   }, [ source, filename, percentComplete, status, framerate, route, isOpen, ext, filesize ]);
 
   const handleError = (error) => {
-    // console.log({ isFucked: true, error });
     setStatus({ ...status, isError: true });
     setError(error);
   };
@@ -67,12 +66,6 @@ export default function Main() {
   };
 
   const handleFramerate = ({ framerate }) => {
-    // console.log({ framerate });
-    // if (!framerate) {
-    //   setError('An error occurred');
-    //   setStatus({ ...status, isError: true });
-    //   throw new Error('Its all fucked johnny!');
-    // }
     filter.setFramerate(framerate);
     setFramerate(framerate);
   };
@@ -103,19 +96,16 @@ export default function Main() {
 
       if (size < 1.5e7) {
         if (files.length <= 450) {
-          // if (size < 10.5e7) {
           const firstFile = files[0].name;
           const ext = firstFile.slice(firstFile.lastIndexOf('.')).toLowerCase();
           const filename = firstFile.slice(0, firstFile.lastIndexOf('.'));
           const route = updateRoute(kind, files);
-          // const filename = files.length === 1 && kind === 'image' ? files[0].name : formatFilename(files[0].name);
           const framerate = getFramerate(files.length);
 
           setFramerate(framerate);
           setFrames(files.length);
           setFilename(filename);
           setExtension(ext);
-
           setSource('');
 
           const formData = new FormData();
@@ -168,7 +158,6 @@ export default function Main() {
       .catch(handleError);
   };
   const handleButtonClick = async (e) => {
-    // console.log(e.target.name);
     await setKind(e.target.name);
     await formRef.current.click();
   };
@@ -229,18 +218,8 @@ const MainGrid = styled.div`
   grid-template-columns: 20vw 60vw 20vw;
   justify-content: center;
   height: calc(100vh - var(--headerHeight) - var(--footerHeight));
+  overflow: hidden;
 `;
-
-// const removeFileExtension = (filename) => {
-//   return filename
-//     .split('.')
-//     .slice(0, -1)
-//     .join('-');
-// };
-
-// const formatFilename = (filename, ext = 'gif') => {
-//   return removeFileExtension(filename) + `.${ext}`;
-// };
 
 const handleProgressEvent = (progressEvent, setPercentComplete) => {
   const percentComplete = Math.round((progressEvent.loaded * 100) / progressEvent.total);

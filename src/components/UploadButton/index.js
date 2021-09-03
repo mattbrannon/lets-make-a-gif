@@ -1,7 +1,8 @@
 import styled from 'styled-components/macro';
 
 export default function UploadButton({ ...props }) {
-  const kind = props.name.charAt(0).toUpperCase() + props.name.slice(1);
+  const name = props.name === 'image' ? 'images' : props.name;
+  const kind = name.charAt(0).toUpperCase() + name.slice(1);
   const buttonText = `Upload ${kind}`;
   if (!props.status.isUploading) {
     return <UploadButtonWrapper {...props}>{buttonText}</UploadButtonWrapper>;

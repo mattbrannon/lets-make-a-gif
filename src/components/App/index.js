@@ -1,5 +1,4 @@
 import { Router } from '@reach/router';
-// import HomePage from '../Home';
 import Header from '../Header';
 import Main from './Main';
 import NotFoundPage from '../404';

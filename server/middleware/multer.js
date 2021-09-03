@@ -54,7 +54,7 @@ const videoStorage = multer.diskStorage({
 });
 
 const videoFileFilter = (req, file, cb) => {
-  const validExts = [ '.mp4', '.mov', '.webm', '.mkv', '.m4v' ];
+  const validExts = [ '.mp4', '.mov', '.webm', '.mkv', '.m4v', '.avi' ];
   const ext = path.extname(file.originalname).toLowerCase();
   if (validExts.includes(ext)) {
     cb(null, true);
@@ -77,14 +77,12 @@ const videoUpload = multer({
   limits: videoLimits,
 });
 
-const uploadImages = imageUpload.array('file');
-const uploadVideo = videoUpload.single('file');
-// exports.videoUpload = videoUpload;
-// exports.uploadImages = imageUpload.array('file');
-// exports.uploadImage = imageUpload.single('file');
+const handleImages = imageUpload.array('file');
+const handleVideos = videoUpload.single('file');
+const handleImage = imageUpload.single('file');
 
-const handleImages = (req, res, next) => {
-  uploadImages(req, res, function (error) {
+const uploadImages = (req, res, next) => {
+  handleImages(req, res, function (error) {
     if (error instanceof multer.MulterError) {
       console.log({ multer: error.code });
       const json = JSON.stringify({ message: error.message });
@@ -94,14 +92,24 @@ const handleImages = (req, res, next) => {
       console.log({ error });
     }
     else {
-      console.log({ success: true });
+      // console.log({ success: true });
       next();
     }
   });
 };
 
-const handleVideos = (req, res, next) => {
-  uploadVideo(req, res, function (error) {
+const uploadVideo = (req, res, next) => {
+  handleVideos(req, res, function (error) {
+    if (error) {
+      console.log({ file: __filename, error: error.message });
+      next(error);
+    }
+    next();
+  });
+};
+
+const uploadImage = (req, res, next) => {
+  handleImage(res, res, (error) => {
     if (error) {
       console.log({ file: __filename, error: error.message });
       next(error);
@@ -111,9 +119,7 @@ const handleVideos = (req, res, next) => {
 };
 
 module.exports = {
-  uploadImage: imageUpload.single('file'),
-  uploadImages: imageUpload.array('file'),
-  uploadVideo: videoUpload.single('file'),
-  handleVideos,
-  handleImages,
+  uploadImage,
+  uploadImages,
+  uploadVideo,
 };
